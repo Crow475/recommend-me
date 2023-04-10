@@ -23,3 +23,13 @@
 .btn-secondary:hover {
     background-color: grey;
 }
+
+.form-control {
+    border-width: 2px;
+}
+
+.form-control:focus {
+    border-color: crimson;
+    border-width: 2px;
+    box-shadow: none;
+}

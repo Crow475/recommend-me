@@ -1,17 +1,18 @@
 import Link from 'next/link';
-import { HandThumbsUp, HandThumbsDown, ChatDots, PersonCircle, StarFill, Star } from 'react-bootstrap-icons';
+import { HandThumbsUp, HandThumbsDown, ChatDots, PersonCircle} from 'react-bootstrap-icons';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const {Card, Button, ButtonToolbar, ButtonGroup, Row, Col} = require('react-bootstrap');
+const {Card, Button, Badge, ButtonToolbar, ButtonGroup, Row, Col} = require('react-bootstrap');
 
 export default function reviewCard() {
     return(
         <Card className='mx-1 my-1'>
             <Card.Img variant='top' src='/temppics/androidparty.png'/>
             <Card.Body>
-                {Array.from({ length: 5}).map((_, id) => (<StarFill color='orange' key={id} size={18}/>))}
+                <Badge>10/10</Badge>
                 <Card.Title className='mt-2'>Test Card Test Card</Card.Title>
+                <Card.Subtitle>Name of the artwork</Card.Subtitle>
                 <hr />
                 <Card.Text>
                     Lorem ipsum dolor test card test card
@@ -29,7 +30,7 @@ export default function reviewCard() {
                 </Row>
                 <ButtonToolbar>
                     <ButtonGroup className='mx-1 my-1'>
-                        <Button variant='secondary' disabled>42</Button>
+                        <Button variant='secondary' disabled>+69</Button>
                         <Button variant='success'><HandThumbsUp size={22}/></Button>
                         <Button variant='danger'><HandThumbsDown size={22}/></Button>
                     </ButtonGroup>
@@ -40,7 +41,8 @@ export default function reviewCard() {
                 </ButtonToolbar>
             </Card.Body>
             <Card.Footer>
-
+                <Badge bg='info' className='mx-1'>Movie</Badge>
+                <Badge bg='info' className='mx-1'>Comedy</Badge>
             </Card.Footer>
         </Card>
     )

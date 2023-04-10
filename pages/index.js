@@ -1,16 +1,16 @@
-import Head from 'next/head'
-import dynamic from 'next/dynamic'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from 'next/head';
+import dynamic from 'next/dynamic';
+import { Inter } from 'next/font/google';
+import styles from '@/styles/Home.module.css';
 
 // import navbar from '@/components/navbar/navbar'
 
-const { Container, Row, Col, Button} = require('react-bootstrap')
+const { Container, Row, Col, Button} = require('react-bootstrap');
 
-const NavBar = dynamic(() => import('../components/navbar/navbar'))
-const ReviewCard = dynamic(() => import('../components/reviewcard/reviewCard'))
+const NavBar = dynamic(() => import('../components/navbar/navbar'));
+const ReviewCard = dynamic(() => import('../components/reviewcard/reviewCard'));
 
-const inter = Inter({ subsets: ['latin'] })
+// const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
   return (
@@ -24,6 +24,20 @@ export default function Home() {
       <main>
         <NavBar />
         <Container fluid>
+          {/* <Row className='my-2'>
+            <h1 className='text-center'>Explore</h1>
+          </Row> */}
+          <Row className='my-2'>
+            <h1>Recent reviews</h1>
+          </Row>
+          <Row xs={1} sm={2} md={2} lg={3} xl={4}>
+            {Array.from({ length: 6}).map((_, idx) => (
+              <Col key={idx}>
+                <ReviewCard/>
+              </Col>
+            ))}
+          </Row>
+          <hr />
           <Row className='my-2'>
             <h1>Top reviews</h1>
           </Row>

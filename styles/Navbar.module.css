@@ -8,3 +8,7 @@
     font-size: x-large;
     margin-left: 5pt; 
 }
+
+.navbar {
+    max-height: min-content;
+}
