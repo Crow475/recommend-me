@@ -9,6 +9,7 @@ const { Container, Row, Col, Button} = require('react-bootstrap');
 
 const NavBar = dynamic(() => import('../components/navbar/navbar'));
 const ReviewCard = dynamic(() => import('../components/reviewcard/reviewCard'));
+const Footer = dynamic(() => import('../components/footer'))
 
 // const inter = Inter({ subsets: ['latin'] });
 
@@ -49,6 +50,7 @@ export default function Home() {
             ))}
           </Row>
         </Container>
+        <Footer/>
       </main>
     </>
   )

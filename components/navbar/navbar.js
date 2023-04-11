@@ -1,11 +1,11 @@
-import Link from 'next/link'
-
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import styles from '@/styles/Navbar.module.css'
+import Link from 'next/link'
 import dynamic from 'next/dynamic';
 
 const {Container, Nav, Navbar, NavbarBrand, Row, Col} = require('react-bootstrap');
-const Account = dynamic(() => import('./account'))
+const SessionControl = dynamic(() => import('./sessionControl'))
 const Search = dynamic(() => import('./searchbar'))
 
 export default function NavBar() {
@@ -31,7 +31,7 @@ export default function NavBar() {
                 </Navbar.Collapse>
                 <Navbar.Collapse id='responsive-navbar-nav' className='justify-content-end'>
                     <Search />
-                    <Account />
+                    <SessionControl />
                 </Navbar.Collapse>
             </Container>
         </Navbar>
