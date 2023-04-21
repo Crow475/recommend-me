@@ -3,11 +3,9 @@ import GithubProvider from "next-auth/providers/github"
 import RedditProvider from "next-auth/providers/reddit"
 import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/lib/prisma"
 
-const prisma = new PrismaClient()
-
-export default NextAuth({
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GithubProvider({
@@ -32,4 +30,23 @@ export default NextAuth({
   pages: {
     signIn: "/signin",
   },
-})
+  callbacks: {
+    async session({ session, user}) {
+      session.user = user
+
+      let userProfile = await prisma.profile.findUnique({
+        where: {
+          userId: session.user.id
+        },
+        include: {
+          likedReviews: true,
+          dislikedReviews: true
+        }
+      });
+      session.user.profile = userProfile
+      return session
+    }
+  }
+}
+
+export default NextAuth(authOptions);

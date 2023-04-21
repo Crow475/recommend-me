@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import prisma from "@/lib/prisma"
 
 import { useRouter } from 'next/router' 
 import { getProviders, signIn, getSession } from "next-auth/react"
@@ -48,7 +49,26 @@ export default function SignIn({ providers }) {
 }
 export async function getServerSideProps(context) {
     const session = await getSession(context)
+
+    const createProfile = async (e) => {
+        if (!session.user.profile) {
+            await prisma.user.update({
+                where: {
+                    id: session.user.id
+                },
+                data: {
+                    profile: {
+                        create: {
+                            image: session.user.image
+                        }
+                    }
+                }
+            })
+        }
+    }
+    
     if (session) {
+        createProfile();
         return { redirect: { destination: "/" } };
     }
 

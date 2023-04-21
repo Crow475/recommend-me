@@ -1,14 +1,47 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 import styles from '@/styles/Navbar.module.css'
 import Link from 'next/link'
 import dynamic from 'next/dynamic';
 
+import { useRouter } from 'next/router';
+
 const {Container, Nav, Navbar, NavbarBrand, Row, Col} = require('react-bootstrap');
+const { LightningChargeFill, HouseDoorFill, BarChartFill} = require('react-bootstrap-icons')
+
 const SessionControl = dynamic(() => import('./sessionControl'))
 const Search = dynamic(() => import('./searchbar'))
 
 export default function NavBar() {
+    const router = useRouter();
+
+    const links = [
+        {name: 'Home', href: '/', logo: <HouseDoorFill/>},
+        {name: 'Top', href: '/top', logo: <BarChartFill/>},
+        {name: 'Latest', href: '/latest', logo: <LightningChargeFill/>},
+    ]
+
+    function Autonav() {
+        return(
+            <Nav>
+                {links.map((element, id) => {
+                    return(
+                        <Link href={element.href} passHref className={styles.link} key={id}>
+                            <Nav.Link as='h3' className='mb-0 pb-0' id={router.asPath === element.href? styles.active : styles.navlink}>
+                                <Row>
+                                    <Col xs={1} md={2}>
+                                        {element.logo}
+                                    </Col>
+                                    <Col xs={10} md={9}>
+                                        <h3>{element.name}</h3>
+                                    </Col>
+                                </Row>
+                            </Nav.Link>
+                        </Link>
+                    );
+                })}
+            </Nav>
+        )
+    }
+
     return(
         <Navbar bg='light' variant='light' collapseOnSelect expand='lg' sticky='top' className={styles.navbar}>
             <Link href='/' className={styles.brand} passHref>
@@ -17,17 +50,7 @@ export default function NavBar() {
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Container fluid>
                 <Navbar.Collapse id='responsive-navbar-nav' className='justify-content-start'>
-                    <Nav>
-                        <Link href='/' passHref className={styles.link}>
-                            <Nav.Link as='span'>Home</Nav.Link>
-                        </Link>
-                        <Link href='/' passHref className={styles.link}>
-                            <Nav.Link as='span'>Top</Nav.Link>
-                        </Link>
-                        <Link href='/' passHref className={styles.link}>
-                            <Nav.Link as='span'>Latest</Nav.Link>
-                        </Link>
-                    </Nav>
+                    <Autonav />
                 </Navbar.Collapse>
                 <Navbar.Collapse id='responsive-navbar-nav' className='justify-content-end'>
                     <Search />

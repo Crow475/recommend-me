@@ -1,3 +1,9 @@
 .avatar {
     height: 20pt;
 }
+
+.username {
+    vertical-align: text-top;
+    white-space: nowrap;
+    overflow: auto;
+}

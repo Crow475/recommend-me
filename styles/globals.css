@@ -13,6 +13,11 @@
     background-color: crimson;
 }
 
+.btn-primary:focus-visible {
+    background-color: red;
+    box-shadow: 0 0 0 4px rgba(255, 69, 0, 0.5);
+}
+
 .btn-secondary {
     background-color: darkgray;
     border: 0px;

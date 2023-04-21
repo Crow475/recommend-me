@@ -1,0 +1,15 @@
+.content {
+    max-height: 78vh;
+    overflow-y: scroll;
+}
+
+@media (orientation: portrait) {
+    .content {
+        max-height: 68vh;
+        overflow-y: scroll;
+    }
+}
+
+.image {
+    max-width: 900;
+}

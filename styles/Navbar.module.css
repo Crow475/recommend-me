@@ -11,4 +11,34 @@
 
 .navbar {
     max-height: min-content;
+    position: sticky;
+}
+
+.navcol {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+.navrow {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+.nowrap {
+    white-space: unset;
+    overflow: auto;
+}
+
+#navlink {
+    color: grey;
+    transition: color 1s;
+}
+
+#navlink:hover {
+    color: orangered;
+}
+
+#active {
+    color: orangered;
+    cursor: default;
 }

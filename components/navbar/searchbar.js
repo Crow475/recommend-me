@@ -1,7 +1,6 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Search } from 'react-bootstrap-icons';
 
-const { InputGroup, Button, Form, Row, Col } = require('react-bootstrap');
+const { InputGroup, Button, Form, Row, Col, FloatingLabel } = require('react-bootstrap');
 
 export default function SearchBar() {
     return(
