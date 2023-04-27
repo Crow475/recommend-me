@@ -3,6 +3,11 @@
     font-size: x-large;
 }
 
+.link:focus-visible {
+    outline: none;
+    box-shadow:  0 0 0 4px rgba(255, 69, 0, 0.5);
+}
+
 .brand {
     text-decoration: none;
     font-size: x-large;

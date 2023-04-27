@@ -5,33 +5,28 @@ import styles from '@/styles/Card.module.css'
 const {Card, Badge, Row, Col} = require('react-bootstrap');
 const UsernameAndAvatar = dynamic(() => import('../usernameAndAvatar'))
 const Reactions = dynamic(() => import('./reactions'))
+const RatingBadge = dynamic(() => import('./ratingBadge'))
 
 export default function ReviewCard({ review }) { 
-    const rating = review.rating
-    var badgeVariant = 'danger'
-
-    if (rating > 6) {
-        badgeVariant = 'success'
-    } else if (rating > 3) {
-        badgeVariant = 'warning'
-    }
-
     return(
         <>
             <Card className='mx-1 my-1'>
                 <Link href={'/reviews/' + review.id} passHref legacyBehavior>
-                    <Card.Img variant='top' src='/temppics/androidparty.png' className={styles.image} />
+                    <Card.Img variant='top' src={review.image} className={styles.image} />
                 </Link>
                 <Card.Body>
                     <Link href={'/reviews/' + review.id} passHref legacyBehavior>
                         <div className={styles.header}>
-                            <Badge bg={badgeVariant}>{review.rating}/10</Badge>
-                            <Card.Title className='mt-2'>
-                                {review.header}
+                            <Card.Title>
+                                <RatingBadge rating={review.rating}/>
+                                <span> </span>
+                                {(review.header.length > 60)?review.header.slice(0, 60) + "...":review.header}
                             </Card.Title>
+                            <Card.Subtitle>
+                                {review.work}
+                            </Card.Subtitle>
                         </div>
                     </Link>   
-                    <Card.Subtitle>{review.work}</Card.Subtitle>
                     <hr />
                     <Card.Text>
                         {review.content.slice(0, 120)}...
@@ -47,6 +42,8 @@ export default function ReviewCard({ review }) {
                     <Reactions review={review} />
                 </Card.Body>
                 <Card.Footer>
+                    <Badge bg='success'>{review.category}</Badge>
+                    <span>{(review.tags.length > 0)?" |":""}</span>
                     {review.tags.map((name, id) => (
                         <Badge bg='info' className='mx-1' key={id}>{name}</Badge>
                     ))}

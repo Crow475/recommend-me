@@ -10,8 +10,9 @@ import { InfoCircleFill, X, XLg } from 'react-bootstrap-icons';
 const {Card, Badge, Row, Col, Container, Accordion, Image, Button} = require('react-bootstrap');
 
 const UsernameAndAvatar = dynamic(() => import('../../components/usernameAndAvatar'));
-const Reactions = dynamic(() => import('../../components/review/reactions'));
 const CommentForm = dynamic(() => import('../../components/review/commentForm'));
+const RatingBadge = dynamic(() => import('../../components/review/ratingBadge'))
+const Reactions = dynamic(() => import('../../components/review/reactions'));
 const Comment = dynamic(() => import('../../components/review/comment'));
 
 export const getServerSideProps = async ({ params }) => {
@@ -36,6 +37,11 @@ export const getServerSideProps = async ({ params }) => {
                         include: {
                             user: true
                         }
+                    },
+                    review: {
+                        include: {
+                            author: true
+                        }
                     }
                 }
             },
@@ -47,6 +53,7 @@ export const getServerSideProps = async ({ params }) => {
 
     review = formatCreationDate(review)
     review.comments.map( comment => {formatCreationDate(comment)})
+    review.comments.map( comment => {formatCreationDate(comment.review)})
 
     return {
         props: review
@@ -54,17 +61,20 @@ export const getServerSideProps = async ({ params }) => {
 }
 
 const ReviewPage = (props) => {
-    const rating = props.rating;
-    var badgeVariant = 'danger';
     const router = useRouter()
-
-    if (rating > 6) {
-        badgeVariant = 'success'
-    } else if (rating > 3) {
-        badgeVariant = 'warning'
-    }
-
     const title = "RecommendMe: " + props.header
+
+    function ReviewImage() {
+        if (props.image) {
+            return(
+                <Card.Header>
+                    <div className={styles.image}>
+                        <Image src={props.image} alt='review pic' thumbnail fluid />
+                    </div>
+                </Card.Header>
+            )
+        }
+    }
 
     return (
         <>
@@ -75,11 +85,14 @@ const ReviewPage = (props) => {
             <main>
                 <Container fluid>
                     <Row className='my-2'>
-                        <Col xs={9} lg={10} xl={11}>
-                            <h1><Badge bg={badgeVariant}>{props.rating}/10</Badge> {props.header}</h1>
+                        <Col xs={10} xxl={11}>
+                            <h1><RatingBadge rating={props.rating}/> {props.header}</h1>
                         </Col>
-                        <Col xs={3} lg={2} xl={1}>
-                            <Button className='my-2' onClick={() => router.back()}><XLg size={25}/> Close</Button>
+                        <Col xs={2} xxl={1}>
+                            <Button className='my-2' onClick={() => router.back()}>
+                                <XLg size={25}/> 
+                                <span className='d-none d-md-inline'> Close</span>
+                            </Button>
                         </Col>
                     </Row>
                     <Row className='my-2'>
@@ -95,15 +108,18 @@ const ReviewPage = (props) => {
                                                 <h5>{props.header}</h5>
                                             </Col>
                                             <Col xs={3}>
-                                                <Badge bg={badgeVariant}>{props.rating}/10</Badge>
+                                                <RatingBadge rating={props.rating}/>
                                             </Col>
                                         </Row>
                                         <Row>
-                                            <Col>
-                                                <h6>{props.work}</h6>
-                                            </Col>
+                                            <span>{props.work}</span>
                                         </Row>
                                         <Row>
+                                            <Col xs={4}>
+                                                <Badge bg='success'>{props.category}</Badge>
+                                            </Col>
+                                        </Row>
+                                        <Row className='mt-2'>
                                             <Col xs={6}>
                                                 <UsernameAndAvatar username={props.author.user.name} avatar={props.author.user.image}/>
                                             </Col>
@@ -122,15 +138,12 @@ const ReviewPage = (props) => {
                         </Col>
                         <Col xs={12} lg={8} className={styles.content}>
                             <Card>
-                                <Card.Header>
-                                    <div className={styles.image}>
-                                        <Image src='/temppics/gavryl-2.jpg' alt='review pic' thumbnail fluid />
-                                    </div>
-                                </Card.Header>
+                                <ReviewImage />
                                 <Card.Body>
                                     <p>{props.content}</p>
-                                    <hr id='comment-section'/>
-                                    <CommentForm review={props}/>
+                                    <hr />
+                                    <div id='comment-section'/>
+                                    <CommentForm review={props} />
                                     <h4>Comments ({props._count.comments})</h4>
                                     {props.comments.map((element, id) => {
                                         return(

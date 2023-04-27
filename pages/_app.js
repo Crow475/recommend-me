@@ -1,7 +1,7 @@
 import { SessionProvider } from "next-auth/react"
 import { SSRProvider } from 'react-bootstrap';
 import { useRouter } from "next/router";
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import Layout from "@/components/Layout";
 
@@ -11,9 +11,9 @@ import '@/styles/globals.css'
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter()
   
-  useEffect(() => {
-    import("bootstrap/dist/js/bootstrap");
-  }, []);
+  // useEffect(() => {
+  //   import("bootstrap/dist/js/bootstrap");
+  // }, []);
 
   const layoutDisable = router.pathname.startsWith('/signin')
   const LayoutComponent = layoutDisable?React.Fragment:Layout

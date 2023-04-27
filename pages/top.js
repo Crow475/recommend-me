@@ -50,6 +50,9 @@ export default function Latest(props) {
 
 export const getServerSideProps = async () => {
     let feed = await prisma.review.findMany({
+        where: {
+            published: true
+        },
         orderBy: {
             likedBy: {
               _count: 'desc'

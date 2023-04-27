@@ -126,7 +126,7 @@ export default function Reactions(review) {
     }
     
     return(
-        <ButtonToolbar>
+        <ButtonToolbar className='mb-1'>
             <ButtonGroup className='mx-1 my-1'>
                 <Button variant='secondary' disabled>{ratio}</Button>
                 {likeOrDislike}

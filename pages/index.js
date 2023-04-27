@@ -52,6 +52,9 @@ export default function Home(props) {
 
 export const getServerSideProps = async () => {
   let latest = await prisma.review.findMany({
+    where: {
+      published: true
+    },
     take: 4,
     include: {
       author: {
@@ -71,6 +74,9 @@ export const getServerSideProps = async () => {
   });
 
   let top = await prisma.review.findMany({
+    where: {
+      published: true
+    },
     take: 4,
     include: {
       author: {

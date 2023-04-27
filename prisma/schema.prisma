@@ -57,15 +57,15 @@ model VerificationToken {
 }
 
 model Profile {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id])
   image           String?
   bio             String?  
-  reviews         Review[] @relation(name: "isAuthorOf")
+  reviews         Review[]  @relation(name: "isAuthorOf")
   comments        Comment[]
-  likedReviews    Review[] @relation(name: "liked")
-  dislikedReviews Review[] @relation(name: "disliked")
+  likedReviews    Review[]  @relation(name: "liked")
+  dislikedReviews Review[]  @relation(name: "disliked")
 }
 
 model Review {
@@ -76,12 +76,14 @@ model Review {
   header       String
   image        String?
   content      String
+  category     Category
   work         String
   rating       Int
   tags         String[]  @default([])
   comments     Comment[]
   likedBy      Profile[] @relation(name: "liked")
   dislikedBy   Profile[] @relation(name: "disliked")
+  published    Boolean   @default(false)
 }
 
 model Comment {
@@ -92,4 +94,11 @@ model Comment {
   review       Review  @relation(fields: [reviewId], references: [id])
   content      String
   creationDate DateTime @default(now())
+}
+
+enum Category {
+  VideoGame
+  Book
+  Movie
+  TVSeries
 }
