@@ -1,17 +1,17 @@
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import styles from '@/styles/Review.module.css'
-import formatCreationDate from '@/lib/formatCreationDate';
 import ReadableCategory from '@/lib/readableCategory';
+import GetFileExtension from '@/lib/getFileExtension';
 
-import { useState } from 'react';
-import { InfoCircleFill, TrashFill, CheckLg, JournalPlus } from 'react-bootstrap-icons';
+import { InfoCircleFill, XCircle, TrashFill, CheckLg, JournalPlus } from 'react-bootstrap-icons';
+import { SupportedFileExtensions, SupportedMIMETypes } from '@/lib/supportedImages';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 
-const {Card, Row, Col, Container, Image, Button, Form, ButtonToolbar, InputGroup, DropdownButton, Dropdown, ButtonGroup} = require('react-bootstrap');
+const {Card, Row, Col, Container, Image, Button, Form, ButtonToolbar, InputGroup, DropdownButton, Dropdown, ButtonGroup, Alert, Badge} = require('react-bootstrap');
 
-const UsernameAndAvatar = dynamic(() => import('../components/usernameAndAvatar'));
 const RatingBadge = dynamic(() => import('../components/review/ratingBadge'))
 
 const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
@@ -25,13 +25,12 @@ export default function Create() {
     const [work, setWork] = useState("")
     const [reviewImage, setReviewImage] = useState("")
     const [imageLink, setImageLink] =useState()
+    const [imageOk, setImageOk] = useState(true)
     const [content, setContent] = useState("")
     const [publish, setPublish] = useState(false)
     const [tags, setTags] = useState([])
+    const [tagInput, setTagInput] = useState("")
     const [showErrors, setShowErrors] = useState(false)
-
-    var time = {creationDate: new Date(Date.now())}
-    time = formatCreationDate(time)
 
     async function uploadImage(file) {
         var fileReader = new FileReader()
@@ -54,6 +53,7 @@ export default function Create() {
 
     const onImageChange = (e) => {
         setReviewImage(e.target.files[0])
+        setImageOk(!(e.target.files[0].size > 3145728) && SupportedFileExtensions.includes(GetFileExtension(e.target.files[0].name)))
         var fileReader = new FileReader()
         fileReader.addEventListener('load', () => {
             setImageLink(fileReader.result)
@@ -61,13 +61,42 @@ export default function Create() {
         fileReader.readAsDataURL(e.target.files[0])
     }
 
+    function DeleteTag({onClick}) {
+        return(
+            <XCircle size={15} onClick={onClick} className='ms-1 align-text-bottom'/>
+        )
+    }
+
+    function AddTag() {
+        if (!tags.includes(tagInput) && tagInput !== "" && tagInput.length <= 20 && tags.length < 20) {
+            setTags(tags.concat(tagInput))
+            setTagInput("")
+        }
+    }
+
+    function FileAlert() {
+        if (reviewImage) {
+            var text
+            if (reviewImage.size > 3145728) {
+                text = "The file is too large!"
+            } else if (!SupportedFileExtensions.includes(GetFileExtension(reviewImage.name))) {
+                text = "Unsupported file extension!"
+            }
+            if (!imageOk) {
+                return (
+                    <Alert variant='danger' className='mt-2 mb-0'>{text}</Alert>
+                )
+            }
+        }
+    }
+
     function ImagePreview() {
-        if (imageLink) {
+        if (imageLink && imageOk) {
             return(
                 <Card>
                     <Card.Body>
                         <div className={styles.image}>
-                            <Image thumbnail fluid src={imageLink} alt='image'/>
+                            <Image thumbnail fluid src={imageLink} alt='image preview'/>
                         </div>
                     </Card.Body>
                 </Card>
@@ -80,16 +109,17 @@ export default function Create() {
             return (
                 <Row className='my-1 mx-1'>
                     <InputGroup className='px-0'>
-                        <Form.Control type="file" onChange={onImageChange} accept="image/*"/>
-                        <Button onClick={() => {setReviewImage(""); setImageLink("")}}>Cancel</Button>
+                        <Form.Control type="file" onChange={onImageChange} accept={SupportedMIMETypes}/>
+                        <Button onClick={() => {setReviewImage(""); setImageLink(""); setImageOk(true)}}>Cancel</Button>
                     </InputGroup>
+                    <FileAlert/>
                 </Row>
             )
         }
         return (
             <Row className='my-1 mx-1'>
                 <Form.Label>Add cover image to your review!</Form.Label>
-                <Form.Control type="file" onChange={onImageChange} accept="image/*"/>
+                <Form.Control type="file" onChange={onImageChange} accept={SupportedMIMETypes}/>
             </Row>
         )
     }
@@ -102,7 +132,7 @@ export default function Create() {
             category && 
             rating !== -1 &&
             header.length <= 100 &&
-            header.length > 3) {
+            header.length >= 3) {
             try {
                 var body = {header: header, 
                             content: content, 
@@ -111,13 +141,12 @@ export default function Create() {
                             rating: Number(rating), 
                             tags: tags, 
                             published: publish,
-                            image: null
-                           }
-                if (reviewImage) {
-                    uploadImage(reviewImage)
-                    body.image = `https://storage.googleapis.com/image_storage-recommend-me/images/${session.user.id}/${reviewImage.name}`
+                            image: null}
+                if (reviewImage && imageOk) {
+                    await uploadImage(reviewImage).then(
+                        body.image = `https://storage.googleapis.com/${process.env.NEXT_PUBLIC_API_GCS_BUCKET_NAME}/images/${session.user.id}/${reviewImage.name}`
+                    )
                 }
-                console.log(body)
                 const response = await fetch(BaseUrl + '/api/addReview', {
                     method: 'POST',
                     headers: {"Content-Type": "application/json"},
@@ -131,7 +160,6 @@ export default function Create() {
         } else {
             setShowErrors(true)
         }
-
     }
 
     if (session) {
@@ -145,19 +173,19 @@ export default function Create() {
                     <Container fluid>
                         <Form onSubmit={handleSubmit}>    
                             <Row className='my-2'>
-                                <Col xs={7} lg={8} xl={9}>
+                                <Col xs={12} md={7} lg={8} xl={9}>
                                     <h1>
                                         <RatingBadge rating={rating}/>
                                         <span> {(header === "")?"Review header":header}</span>
                                     </h1>
                                 </Col>
-                                <Col  xs={5} lg={4} xl={3}>
+                                <Col  xs={12} md={5} lg={4} xl={3}>
                                     <ButtonToolbar className='my-2'>
-                                        <Button variant='danger' className='mx-1' onClick={() => router.back()}>
+                                        <Button variant='danger' className='mx-1 my-1' onClick={() => router.back()}>
                                             <TrashFill size={20}/>
                                             <span className='d-none d-xl-inline'> Discard</span>
                                         </Button>
-                                        <ButtonGroup>
+                                        <ButtonGroup className='my-1'>
                                             <Button variant='secondary' type='submit' onClick={() => setPublish(false)}>
                                                 <JournalPlus size={20}/>
                                                 <span className='d-none d-lg-inline'> Save draft</span>
@@ -179,14 +207,19 @@ export default function Create() {
                                                 <span> Review info</span>
                                             </Card.Title>
                                             <Row className='my-1 py-2'>
-                                                <Form.Label>Header *</Form.Label>
-                                                <Col>
+                                                <Col xs={10} lg={7} xl={9}>
+                                                    <Form.Label>Header *</Form.Label>
+                                                </Col>
+                                                <Col xs={2} lg={5} xl={3} className='text-end'>
+                                                    <Form.Text>{header.length}/100</Form.Text>
+                                                </Col>
+                                                <Col xs={12}>
                                                     <Form.Control type='text' 
                                                         placeholder='Write a descriptive header!' 
                                                         onChange={(e) => setHeader(e.target.value)}
                                                     />
-                                                    <span className='text-danger'>{(showErrors && !header)?"Your review needs a header!":""} </span>
-                                                    <span className='text-danger'>{(showErrors && header && (header.length > 100 || header.length < 4))?"Header must be 3-100 characters long!":""}</span>
+                                                    <span className='text-danger'>{(showErrors && !header)?" Your review needs a header!":""} </span>
+                                                    <span className='text-danger'>{(showErrors && header && (header.length > 100 || header.length < 3))?"Header must be 3-100 characters long!":""}</span>
                                                 </Col>
                                             </Row>
                                             <Row className='my-1 py-2'>
@@ -223,14 +256,34 @@ export default function Create() {
                                                 <span className='text-danger'>{(showErrors && rating === -1)?"Set the rating from 0 to 10!":""} </span>
                                             </Row>
                                             <Row className='my-1 py-2'>
-                                                <Col xs={6}>
-                                                    <UsernameAndAvatar username={session.user.name} avatar={session.user.profile.image}/>
+                                                <Col xs={10} lg={7} xl={9}>
+                                                    <Form.Label>Tags</Form.Label>
                                                 </Col>
-                                                <Col xs={6}>
-                                                    <p>{time.creationDate}</p>
+                                                <Col xs={2} lg={5} xl={3} className='text-end'>
+                                                    <Form.Text>{tags.length}/20</Form.Text>
                                                 </Col>
+                                                <Col className='mb-1'>
+                                                    {tags.map((name, id) => (
+                                                        <Badge bg='info' className='mx-1' key={id}>
+                                                            {name}
+                                                            <DeleteTag onClick={() => setTags(tags.filter(element => element !== name))}/>
+                                                        </Badge>
+                                                    ))}
+                                                </Col>
+                                                <InputGroup className='mt-1'>
+                                                    <Form.Control type='text'
+                                                        placeholder='Name of a tag'
+                                                        value={tagInput}
+                                                        onChange={(e) => setTagInput(e.target.value.trim().replace(/ /g, "_"))}
+                                                    />
+                                                    <Button onClick={AddTag} >Add</Button>
+                                                </InputGroup>
+                                                <Form.Text>Make it easier for others to find your review</Form.Text>
+                                                <span className='text-danger'>{tags.includes(tagInput)?"Tags have to be unique!":""}</span>
+                                                <span className='text-danger'>{(tagInput.length > 20)?"Tag name is too long!":""}</span>
+                                                <span className='text-warning'>{(tags.length >= 20)?"Cannot add more tags!":""}</span>
                                             </Row>
-                                            <span className='text-muted'> * - required fields</span>
+                                            <span className={(!header || !work || !category || rating === -1) && showErrors?"text-danger":'text-muted'}> * - required fields</span>
                                         </Card.Body>
                                     </Card>
                                 </Col>

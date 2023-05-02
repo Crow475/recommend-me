@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import styles from '@/styles/Card.module.css'
+import ReadableCategory from '@/lib/readableCategory';
 
 const {Card, Badge, Row, Col} = require('react-bootstrap');
-const UsernameAndAvatar = dynamic(() => import('../usernameAndAvatar'))
+const ProfileLink = dynamic(() => import('../profileLink'))
 const Reactions = dynamic(() => import('./reactions'))
 const RatingBadge = dynamic(() => import('./ratingBadge'))
 
@@ -12,7 +13,7 @@ export default function ReviewCard({ review }) {
         <>
             <Card className='mx-1 my-1'>
                 <Link href={'/reviews/' + review.id} passHref legacyBehavior>
-                    <Card.Img variant='top' src={review.image} className={styles.image} />
+                    <Card.Img variant='top' src={review.image} className={styles.image}/>
                 </Link>
                 <Card.Body>
                     <Link href={'/reviews/' + review.id} passHref legacyBehavior>
@@ -33,7 +34,7 @@ export default function ReviewCard({ review }) {
                     </Card.Text>
                     <Row>
                         <Col lg={6} xs={6}>
-                            <UsernameAndAvatar username={review.author.user.name} avatar={review.author.user.image} />
+                            <ProfileLink profile={review.author} />
                         </Col>
                         <Col lg={6} xs={6}>
                             <p className="text-end">{review.creationDate}</p>
@@ -42,7 +43,7 @@ export default function ReviewCard({ review }) {
                     <Reactions review={review} />
                 </Card.Body>
                 <Card.Footer>
-                    <Badge bg='success'>{review.category}</Badge>
+                    <Badge bg='success'>{ReadableCategory(review.category)}</Badge>
                     <span>{(review.tags.length > 0)?" |":""}</span>
                     {review.tags.map((name, id) => (
                         <Badge bg='info' className='mx-1' key={id}>{name}</Badge>

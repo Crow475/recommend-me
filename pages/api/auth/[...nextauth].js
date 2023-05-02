@@ -40,7 +40,7 @@ export const authOptions = {
         },
         include: {
           likedReviews: true,
-          dislikedReviews: true
+          dislikedReviews: true,
         }
       });
       session.user.profile = userProfile

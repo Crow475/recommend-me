@@ -1,9 +1,10 @@
-import { HandThumbsUp, HandThumbsUpFill, HandThumbsDown, HandThumbsDownFill, ChatDots, Share} from 'react-bootstrap-icons';
+import { HandThumbsUp, HandThumbsUpFill, HandThumbsDown, HandThumbsDownFill, ChatDots, Share, PencilFill} from 'react-bootstrap-icons';
+import { StandardTooltipProps } from '@/lib/tooltipProps';
 import { useSession, signIn} from "next-auth/react";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import Link from 'next/link';
 
-const { Button, ButtonGroup, ButtonToolbar } = require('react-bootstrap');
+const { Button, ButtonGroup, ButtonToolbar, OverlayTrigger, Tooltip, Popover } = require('react-bootstrap');
 
 const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -75,69 +76,158 @@ export default function Reactions(review) {
         }
     }
 
-    var likeOrDislike
+    function EditButton() {
+        if (session && session.user.profile.id === review.review.author.id) {
+            return(
+                <OverlayTrigger
+                    {...StandardTooltipProps}
+                    overlay={
+                        <Tooltip>
+                            Edit review
+                        </Tooltip>
+                    }
+                >
+                    <Button className='mx-1 my-1'><PencilFill className='align-middle' size={18}/></Button>
+                </OverlayTrigger>
+            )
+        }
+    }
+
+    const CommentButton = forwardRef(function CommentButton({ onClick, href}, ref) {
+        return(
+            <OverlayTrigger
+                {...StandardTooltipProps}
+                overlay={
+                    <Tooltip>
+                        Comments
+                    </Tooltip>
+                }
+            >
+                <Button variant='secondary' ref={ref} href={href} onClick={onClick}><ChatDots size={18}/></Button>
+            </OverlayTrigger>
+        )
+    })
+
+    const linkCopied = (
+        <Popover>
+            <Popover.Body>
+                Link copied to clipboard!
+            </Popover.Body>
+        </Popover>
+    )
+
+    var likeButton
+    var dislikeButton
 
     if (session) {
         if (reaction === 'like') {
-            likeOrDislike = (
-                <>
-                    <Button variant='success' onClick={() => Like('remove')}>
-                        <HandThumbsUpFill size={22}/>
-                    </Button>
-                    <Button variant='danger' onClick={() => {Dislike('add'); setLikeCount(likeCount - 1)}}>
-                        <HandThumbsDown size={22}/>
-                    </Button>
-                </>
-            )    
-        } else if (reaction === 'dislike') {
-            likeOrDislike = (
-                <>
-                    <Button variant='success' onClick={() => {Like('add'); setDislikeCount(dislikeCount - 1)}}>
-                        <HandThumbsUp size={22}/>
-                    </Button>
-                    <Button variant='danger' onClick={() => Dislike('remove')}>
-                        <HandThumbsDownFill size={22}/>
-                    </Button>
-                </>
-            )
-        } else {
-            likeOrDislike = (
-                <>
-                    <Button variant='success' onClick={() => Like('add')}>
-                        <HandThumbsUp size={22}/>
-                    </Button>
-                    <Button variant='danger' onClick={() => Dislike('add')}>
-                        <HandThumbsDown size={22}/>
-                    </Button>
-                </>
-            )
-        }
-    } else {
-        likeOrDislike = (
-            <>
-                <Button variant='success' onClick={signIn}>
-                    <HandThumbsUp size={22}/>
+            likeButton = (
+                <Button variant='success' onClick={() => Like('remove')}>
+                    <HandThumbsUpFill size={22}/>
                 </Button>
-                <Button variant='danger' onClick={signIn}>
+            )
+            dislikeButton = (
+                <Button variant='danger' onClick={() => {Dislike('add'); setLikeCount(likeCount - 1)}}>
                     <HandThumbsDown size={22}/>
                 </Button>
-            </>
+            )
+        } else if (reaction === 'dislike') {
+            likeButton = (
+                <Button variant='success' onClick={() => {Like('add'); setDislikeCount(dislikeCount - 1)}}>
+                    <HandThumbsUp size={22}/>
+                </Button>
+            )
+            dislikeButton = (
+                <Button variant='danger' onClick={() => Dislike('remove')}>
+                    <HandThumbsDownFill size={22}/>
+                </Button>
+            )
+        } else {
+            likeButton = (
+                <Button variant='success' onClick={() => Like('add')}>
+                    <HandThumbsUp size={22}/>
+                </Button>
+            )
+            dislikeButton = (
+                <Button variant='danger' onClick={() => Dislike('add')}>
+                    <HandThumbsDown size={22}/>
+                </Button>
+            )
+        }
+        
+    } else {
+        likeButton = (
+            <Button variant='success' onClick={signIn}>
+                <HandThumbsUp size={22}/>
+            </Button>
+        )
+        dislikeButton = (
+            <Button variant='danger' onClick={signIn}>
+                <HandThumbsDown size={22}/>
+            </Button>
         )
     }
     
+    const likeAndDislike = (
+        <>
+            <OverlayTrigger
+                {...StandardTooltipProps}
+                overlay={
+                    <Tooltip>
+                        I like this
+                    </Tooltip>
+                }
+            >
+                {likeButton}
+            </OverlayTrigger>
+            <OverlayTrigger
+                {...StandardTooltipProps}
+                overlay={
+                    <Tooltip>
+                        I dislike this
+                    </Tooltip>
+                }
+            >
+                {dislikeButton}
+            </OverlayTrigger>
+        </>
+    )
+
+    const comment = (
+        <Link href={commentLink} passHref legacyBehavior>
+            <CommentButton />
+        </Link>
+    )
+
+    const share = (
+        <OverlayTrigger
+            {...StandardTooltipProps}
+            overlay={
+                <Tooltip>
+                    Copy review link
+                </Tooltip>
+            }
+        >
+            <ButtonGroup>
+                <OverlayTrigger trigger="click" rootClose placement='top' overlay={linkCopied}>
+                    <Button className='me-1 my-1' variant='secondary' onClick={copyLink}><Share className='align-middle' size={18}/></Button>
+                </OverlayTrigger>
+            </ButtonGroup>
+        </OverlayTrigger>
+    )
+
     return(
         <ButtonToolbar className='mb-1'>
-            <ButtonGroup className='mx-1 my-1'>
+            <ButtonGroup className='me-1 my-1'>
                 <Button variant='secondary' disabled>{ratio}</Button>
-                {likeOrDislike}
+                {likeAndDislike}
             </ButtonGroup>
-            <ButtonGroup className='mx-2 my-1'>
+            <ButtonGroup className='me-1 my-1'>
                 <Button variant='secondary' disabled>{review.review._count.comments}</Button>
-                <Link href={commentLink} passHref legacyBehavior>
-                    <Button variant='secondary'><ChatDots size={18}/></Button>
-                </Link>
+                {comment}
             </ButtonGroup>
-            <Button className='mx-2 my-1' variant='secondary' onClick={copyLink}><Share className='align-middle' size={18}/></Button>
+            {share}
+            <EditButton />
         </ButtonToolbar>
     )
    

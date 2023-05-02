@@ -25,7 +25,7 @@ export default async function handler(req, res) {
                 },
             });
         
-            const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+            const bucket = storage.bucket(process.env.NEXT_PUBLIC_API_GCS_BUCKET_NAME);
             const filename = `images/${session.user.id}/${req.body.name}`
             const destFile = bucket.file(filename)
         

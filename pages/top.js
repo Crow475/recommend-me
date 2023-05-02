@@ -60,8 +60,12 @@ export const getServerSideProps = async () => {
         },
         include: {
           author: {
-              include: {
-                user: true
+            include: {
+                user: {
+                  select: {
+                    name: true
+                  }
+                }
               }
           },
           likedBy: true,

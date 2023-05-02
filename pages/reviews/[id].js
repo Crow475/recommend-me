@@ -9,10 +9,10 @@ import { InfoCircleFill, X, XLg } from 'react-bootstrap-icons';
 
 const {Card, Badge, Row, Col, Container, Accordion, Image, Button} = require('react-bootstrap');
 
-const UsernameAndAvatar = dynamic(() => import('../../components/usernameAndAvatar'));
 const CommentForm = dynamic(() => import('../../components/review/commentForm'));
-const RatingBadge = dynamic(() => import('../../components/review/ratingBadge'))
+const RatingBadge = dynamic(() => import('../../components/review/ratingBadge'));
 const Reactions = dynamic(() => import('../../components/review/reactions'));
+const ProfileLink = dynamic(() => import('../../components/profileLink'));
 const Comment = dynamic(() => import('../../components/review/comment'));
 
 export const getServerSideProps = async ({ params }) => {
@@ -23,7 +23,11 @@ export const getServerSideProps = async ({ params }) => {
         include: {
             author: {
                 include: {
-                  user: true
+                  user: {
+                    select: {
+                        name: true
+                    }
+                  }
                 }
             },
             likedBy: true,
@@ -35,7 +39,11 @@ export const getServerSideProps = async ({ params }) => {
                 include: {
                     author: {
                         include: {
-                            user: true
+                            user: {
+                                select: {
+                                    name: true
+                                }
+                            }
                         }
                     },
                     review: {
@@ -121,7 +129,7 @@ const ReviewPage = (props) => {
                                         </Row>
                                         <Row className='mt-2'>
                                             <Col xs={6}>
-                                                <UsernameAndAvatar username={props.author.user.name} avatar={props.author.user.image}/>
+                                                <ProfileLink profile={props.author}/>
                                             </Col>
                                             <Col xs={6}>
                                                 {props.creationDate}

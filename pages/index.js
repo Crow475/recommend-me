@@ -58,9 +58,13 @@ export const getServerSideProps = async () => {
     take: 4,
     include: {
       author: {
-          include: {
-            user: true
+        include: {
+          user: {
+            select: {
+              name: true
+            }
           }
+        }
       },
       likedBy: true,
       dislikedBy: true,
@@ -81,7 +85,11 @@ export const getServerSideProps = async () => {
     include: {
       author: {
         include: {
-          user: true
+          user: {
+            select: {
+              name: true
+            }
+          }
         }
       },
       likedBy: true,

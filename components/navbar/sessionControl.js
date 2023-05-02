@@ -7,7 +7,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 const {Button, ButtonToolbar, ButtonGroup} = require('react-bootstrap');
 const { PencilSquare, BoxArrowRight } = require('react-bootstrap-icons');
 
-const UsernameAndAvatar = dynamic(() => import('../usernameAndAvatar'));
+const UsernameAndAvatar = dynamic(() => import ('../usernameAndAvatar'));
 
 export default function Account() {
     const { data: session } = useSession();
@@ -31,7 +31,7 @@ export default function Account() {
             <ButtonToolbar className='my-2 mx-1 px-0'>
                 <CreateButton />
                 <ButtonGroup>
-                    <Link href='/profile' passHref legacyBehavior>
+                    <Link href={`/profile/${session.user.profile.id}`} passHref legacyBehavior>
                         <Button>
                             <UsernameAndAvatar username={session.user.name} avatar={session.user.image}/>
                         </Button>

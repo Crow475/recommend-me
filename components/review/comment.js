@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 
-const UsernameAndAvatar = dynamic(() => import('../usernameAndAvatar'))
+const ProfileLink = dynamic(() => import('../profileLink'))
 
 const {Card, Row, Col, Badge} = require('react-bootstrap');
 
@@ -28,7 +28,7 @@ export default function Comment(comment) {
         <Card className='my-2' bg={commentBg}>
             <Row className='mx-1 mt-2'>
                 <Col lg={4} xs={6} >
-                    <UsernameAndAvatar username={comment.comment.author.user.name} avatar={comment.comment.author.image}/>
+                    <ProfileLink profile={comment.comment.author}/>
                     <span> </span>
                     <AuthorBadge/>
                 </Col>

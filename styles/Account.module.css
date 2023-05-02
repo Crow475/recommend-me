@@ -2,8 +2,24 @@
     height: 20pt;
 }
 
+.avatar_big {
+    height: 100pt;
+    width: auto;
+    margin-bottom: 3%;
+}
+
 .username {
     vertical-align: text-top;
     white-space: nowrap;
     overflow: auto;
+}
+
+.profile_link {
+    text-decoration: none;
+    color: black;
+}
+
+#tabLink, .active {
+    background-color: orangered;
+    border-radius: 7px;
 }
