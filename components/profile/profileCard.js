@@ -178,7 +178,7 @@ export default function ProfileCard({profile, published}) {
                             <Form.Label>Bio</Form.Label>
                         </Col>
                         <Col xs={2} lg={5} xl={3} className='text-end'>
-                            <Form.Text>{bio.length}/200</Form.Text>
+                            <Form.Text>{(bio)?bio.length:"0"}/200</Form.Text>
                         </Col>
                         <Form.Control as='textarea'
                             rows={3}
