@@ -39,7 +39,6 @@ export default async function handle(req, res) {
                     }
                 });
             }
-            console.log(result)
             res.status(200).json({result})
         } catch(err) {
             console.error(err)

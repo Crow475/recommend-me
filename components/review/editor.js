@@ -186,14 +186,12 @@ export default function Editor({review}) {
                     id: review.id,
                     authorId: session.user.profile.id
                 }
-                console.log(body)
                 const response = await fetch(BaseUrl + '/api/deleteReview', {
                     method: 'DELETE',
                     headers: {"Content-Type": "application/json"},
                     body: JSON.stringify(body)
                 })
                 const data = await response.json()
-                console.log(data.result)
                 router.push('/')
             } catch(err) {
                 console.error(err)

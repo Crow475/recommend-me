@@ -1,5 +1,5 @@
 import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { Storage } from '@google-cloud/storage';
+import { IdempotencyStrategy, Storage } from '@google-cloud/storage';
 import { getServerSession } from "next-auth/next"
 
 const stream = require('node:stream')
@@ -19,6 +19,11 @@ export default async function handler(req, res) {
         try {
             const storage = new Storage({
                 projectId: process.env.GCS_PROJECT_ID,
+                retryOptions: {
+                    autoRetry: true,
+                    maxRetries: 10,
+                    idempotencyStrategy: IdempotencyStrategy.RetryAlways
+                },
                 credentials: {
                     client_email: process.env.GCS_CLIENT_EMAIL,
                     private_key: process.env.GCS_PRIVATE_KEY.replace(/\\n/g, "\n"),
