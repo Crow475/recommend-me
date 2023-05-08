@@ -10,7 +10,7 @@ export default async function handler(req, res) {
             const result = await prisma.comment.create ({
                 data: {
                     review: {
-                        connect: {id: req.body.review.review.id}
+                        connect: {id: req.body.review.id}
                     },
                     author: {
                         connect: {id: session.user.profile.id}

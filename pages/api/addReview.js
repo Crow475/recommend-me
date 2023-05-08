@@ -7,19 +7,38 @@ export default async function handle(req, res) {
 
     if (session) {
         try {
-            const result = await prisma.review.create({
-                data: {
-                    author: { connect: { id: session.user.profile.id } },
-                    header: req.body.header,
-                    image: req.body.image,
-                    content: req.body.content,
-                    category: req.body.category,
-                    work: req.body.work,
-                    rating: req.body.rating,
-                    tags: req.body.tags,
-                    published: req.body.published
-                }
-            });
+            let result
+            if (req.method === 'PUT' && req.body.id) {
+                result = await prisma.review.update({
+                    where: {
+                        id: req.body.id
+                    },
+                    data: {
+                        header: req.body.header,
+                        image: req.body.image,
+                        content: req.body.content,
+                        category: req.body.category,
+                        work: req.body.work,
+                        rating: req.body.rating,
+                        tags: req.body.tags,
+                        published: req.body.published
+                    }
+                })
+            } else {
+                result = await prisma.review.create({
+                    data: {
+                        author: { connect: { id: session.user.profile.id } },
+                        header: req.body.header,
+                        image: req.body.image,
+                        content: req.body.content,
+                        category: req.body.category,
+                        work: req.body.work,
+                        rating: req.body.rating,
+                        tags: req.body.tags,
+                        published: req.body.published
+                    }
+                });
+            }
             console.log(result)
             res.status(200).json({result})
         } catch(err) {

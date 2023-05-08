@@ -61,7 +61,10 @@ model Profile {
   userId          String    @unique
   user            User      @relation(fields: [userId], references: [id])
   image           String?
-  bio             String?  
+  bio             String?
+  shareLikes      Boolean   @default(true)
+  shareDislikes   Boolean   @default(false)
+  shareStats      Boolean   @default(false)  
   reviews         Review[]  @relation(name: "isAuthorOf")
   comments        Comment[]
   likedReviews    Review[]  @relation(name: "liked")

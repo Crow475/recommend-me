@@ -8,15 +8,14 @@ const { Button, ButtonGroup, ButtonToolbar, OverlayTrigger, Tooltip, Popover } =
 
 const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
 
-export default function Reactions(review) {
+export default function Reactions({review, vertical}) {
     const { data: session } = useSession()
-    const [currentReview, setCurrentReview] = useState(review)
     const [reaction, setReaction] = useState(null)
-    const [likeCount, setLikeCount] = useState(review.review.likedBy.length)
-    const [dislikeCount, setDislikeCount] = useState(review.review.dislikedBy.length)
+    const [likeCount, setLikeCount] = useState(review.likedBy.length)
+    const [dislikeCount, setDislikeCount] = useState(review.dislikedBy.length)
     const [ratio, setRatio] = useState(likeCount - dislikeCount)
 
-    const reviewLink = BaseUrl + '/reviews/' + review.review.id
+    const reviewLink = BaseUrl + '/reviews/' + review.id
     const commentLink = reviewLink + '/#comment-section'
 
     const copyLink = (e) => {
@@ -25,15 +24,15 @@ export default function Reactions(review) {
 
     useEffect(() => {
         if (session) {
-            if (session.user.profile.likedReviews.some(item => item.id === review.review.id)) {
+            if (session.user.profile.likedReviews.some(item => item.id === review.id)) {
                 setReaction('like')
-            } else if (session.user.profile.dislikedReviews.some(item => item.id === review.review.id)) {
+            } else if (session.user.profile.dislikedReviews.some(item => item.id === review.id)) {
                 setReaction('dislike')
             } else {
                 setReaction(null)
             }
         }
-    }, [session, review.review.id])
+    }, [session, review.id])
     
     useEffect(() => {
         setRatio(likeCount - dislikeCount)
@@ -41,7 +40,7 @@ export default function Reactions(review) {
 
     async function APIcall (path, method) {
         try {
-            const body = {review: currentReview, method: method};
+            const body = {review: review, method: method};
             await fetch(BaseUrl + path, {
                 method: 'PUT',
                 headers: {"Content-Type": "application/json"},
@@ -76,8 +75,8 @@ export default function Reactions(review) {
         }
     }
 
-    function EditButton() {
-        if (session && session.user.profile.id === review.review.author.id) {
+    function EditButton({showLabel}) {
+        const EditReview = forwardRef(function EditReview({ onClick, href }, ref) {
             return(
                 <OverlayTrigger
                     {...StandardTooltipProps}
@@ -87,8 +86,19 @@ export default function Reactions(review) {
                         </Tooltip>
                     }
                 >
-                    <Button className='mx-1 my-1'><PencilFill className='align-middle' size={18}/></Button>
+                    <Button className='mx-1 my-1' ref={ref} href={href} onClick={onClick}>
+                        <PencilFill className='align-middle' size={18}/>
+                        {showLabel?<span className='mx-1 align-text-top'>Edit</span>:null}
+                    </Button>
                 </OverlayTrigger>
+            )
+        })
+        
+        if (session && session.user.profile.id === review.author.id) {
+            return(
+                <Link href={reviewLink + '/edit'} passHref legacyBehavior>
+                    <EditReview />
+                </Link>
             )
         }
     }
@@ -120,6 +130,14 @@ export default function Reactions(review) {
     var dislikeButton
 
     if (session) {
+        if (!review.published) {
+            return(
+                <ButtonToolbar className='mb-1'>
+                    <EditButton showLabel={true}/>
+                </ButtonToolbar>
+            )
+        }
+
         if (reaction === 'like') {
             likeButton = (
                 <Button variant='success' onClick={() => Like('remove')}>
@@ -208,7 +226,7 @@ export default function Reactions(review) {
                 </Tooltip>
             }
         >
-            <ButtonGroup>
+            <ButtonGroup vertical={vertical}>
                 <OverlayTrigger trigger="click" rootClose placement='top' overlay={linkCopied}>
                     <Button className='me-1 my-1' variant='secondary' onClick={copyLink}><Share className='align-middle' size={18}/></Button>
                 </OverlayTrigger>
@@ -223,7 +241,7 @@ export default function Reactions(review) {
                 {likeAndDislike}
             </ButtonGroup>
             <ButtonGroup className='me-1 my-1'>
-                <Button variant='secondary' disabled>{review.review._count.comments}</Button>
+                <Button variant='secondary' disabled>{review._count.comments}</Button>
                 {comment}
             </ButtonGroup>
             {share}

@@ -14,7 +14,7 @@ export default async function handle(req, res) {
                     },
                     data: {
                         likedReviews: {
-                            connect: {id: req.body.review.review.id}
+                            connect: {id: req.body.review.id}
                         }
                     }
                 })
@@ -26,7 +26,7 @@ export default async function handle(req, res) {
                     },
                     data: {
                         likedReviews: {
-                            disconnect: {id: req.body.review.review.id}
+                            disconnect: {id: req.body.review.id}
                         }
                     }
                 })

@@ -5,11 +5,11 @@ import { useRouter } from 'next/router'
 import { useState } from "react";
 
 const {Button, ButtonToolbar, Row, Col, Form, Alert} = require('react-bootstrap');
-const UsernameAndAvatar = dynamic(() => import('../usernameAndAvatar'))
+const UsernameAndAvatar = dynamic(() => import('../profile/usernameAndAvatar'))
 
 const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
 
-export default function CommentForm(review) {
+export default function CommentForm({review}) {
     const { data: session } = useSession();
     const [alert, setAlert] = useState(false)
     const router = useRouter()
@@ -35,29 +35,31 @@ export default function CommentForm(review) {
         }
     }
 
-    if (session) {
+    if (review.published) {
+        if (session) {
+            return(
+                <Form className="mx-3" onSubmit={HandleSubmit}>
+                    <UsernameAndAvatar username={session.user.name} avatar={session.user.image}/>
+                    <Form.Group className="my-2">
+                        <Form.Control as="textarea" rows={3} id="content" placeholder='Share your thoughts!'/>
+                        <Alert show={alert} variant="danger" className="my-1" dismissible onClose={() => setAlert(false)}>
+                            A comment cannot be empty!
+                        </Alert>
+                    </Form.Group>
+                    <Row className='justify-content-end my-1'>
+                        <Col sm={1} className="mx-3">
+                            <Button type='submit' >Submit</Button>
+                        </Col>
+                    </Row>
+                </Form>
+            )
+        }
         return(
-            <Form className="mx-3" onSubmit={HandleSubmit}>
-                <UsernameAndAvatar username={session.user.name} avatar={session.user.image}/>
-                <Form.Group className="my-2">
-                    <Form.Control as="textarea" rows={3} id="content" placeholder='Share your thoughts!'/>
-                    <Alert show={alert} variant="danger" className="my-1" dismissible onClose={() => setAlert(false)}>
-                        A comment cannot be empty!
-                    </Alert>
-                </Form.Group>
-                <Row className='justify-content-end my-1'>
-                    <Col sm={1} className="mx-3">
-                        <Button type='submit' >Submit</Button>
-                    </Col>
-                </Row>
-            </Form>
+            <ButtonToolbar>
+                <span className="my-1">Sign in to leave a comment! </span>
+                <Button size='me' variant='primary' className='mx-2' onClick={() => signIn()}>Sign in</Button>
+            </ButtonToolbar>
+            
         )
     }
-    return(
-        <ButtonToolbar>
-            <span className="my-1">Sign in to leave a comment! </span>
-            <Button size='me' variant='primary' className='mx-2' onClick={() => signIn()}>Sign in</Button>
-        </ButtonToolbar>
-        
-    )
 }

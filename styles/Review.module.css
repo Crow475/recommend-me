@@ -1,5 +1,7 @@
 .content {
-    max-height: 78vh;
+    max-height: 75vh;
+    max-width: 100vw;
+    overflow-x: hidden;
     overflow-y: scroll;
 }
 
@@ -12,4 +14,8 @@
 
 .image {
     max-width: 900;
+}
+
+.mdLink {
+    text-decoration: none;
 }

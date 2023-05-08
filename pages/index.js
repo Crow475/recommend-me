@@ -13,7 +13,6 @@ const { Container, Row } = require('react-bootstrap');
 
 const Footer = dynamic(() => import('../components/footer'));
 const ReviewFeed = dynamic(() => import('../components/review/reviewFeed'))
-const SignInBanner = dynamic(() => import('../components/signInBanner'))
 
 // const inter = Inter({ subsets: ['latin'] });
 

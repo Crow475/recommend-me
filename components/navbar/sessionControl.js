@@ -7,7 +7,7 @@ import { useSession, signIn, signOut } from "next-auth/react";
 const {Button, ButtonToolbar, ButtonGroup} = require('react-bootstrap');
 const { PencilSquare, BoxArrowRight } = require('react-bootstrap-icons');
 
-const UsernameAndAvatar = dynamic(() => import ('../usernameAndAvatar'));
+const UsernameAndAvatar = dynamic(() => import ('../profile/usernameAndAvatar'));
 
 export default function Account() {
     const { data: session } = useSession();
@@ -19,7 +19,7 @@ export default function Account() {
                 <Link href='/create' passHref legacyBehavior>
                     <Button className='mx-1'>
                         <PencilSquare size={25}/>
-                        <span className='d-none d-xl-inline'> Create</span>
+                        <span className='d-none d-xl-inline align-text-top'> Create</span>
                     </Button>
                 </Link>
             )

@@ -7,3 +7,17 @@
 .header {
     cursor: pointer;
 }
+
+.card_text {
+    height: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: -webkit-linear-gradient(rgba(0,0,0,1), rgba(0,0,0,0));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+}
+
+.text_link {
+    text-decoration: none;
+}

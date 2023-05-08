@@ -4,19 +4,23 @@ import styles from '@/styles/Card.module.css'
 import ReadableCategory from '@/lib/readableCategory';
 
 const {Card, Badge, Row, Col} = require('react-bootstrap');
-const ProfileLink = dynamic(() => import('../profileLink'))
+
+const ProfileLink = dynamic(() => import('../profile/profileLink'))
 const Reactions = dynamic(() => import('./reactions'))
 const RatingBadge = dynamic(() => import('./ratingBadge'))
+const ReviewCardText = dynamic(() => import('./reviewCardText'))
 
 export default function ReviewCard({ review }) { 
+    const reviewLink = `/reviews/${review.id}`
+    
     return(
         <>
             <Card className='mx-1 my-1'>
-                <Link href={'/reviews/' + review.id} passHref legacyBehavior>
+                <Link href={reviewLink} passHref legacyBehavior>
                     <Card.Img variant='top' src={review.image} className={styles.image}/>
                 </Link>
                 <Card.Body>
-                    <Link href={'/reviews/' + review.id} passHref legacyBehavior>
+                    <Link href={reviewLink} passHref legacyBehavior>
                         <div className={styles.header}>
                             <Card.Title>
                                 <RatingBadge rating={review.rating}/>
@@ -29,9 +33,9 @@ export default function ReviewCard({ review }) {
                         </div>
                     </Link>   
                     <hr />
-                    <Card.Text>
-                        {review.content.slice(0, 120)}...
-                    </Card.Text>
+                    <Link href={reviewLink + "#text"} passHref className={styles.text_link}>
+                        <ReviewCardText text={review.content} />
+                    </Link>
                     <Row>
                         <Col lg={6} xs={6}>
                             <ProfileLink profile={review.author} />
