@@ -9,9 +9,9 @@ export default function reviewFeed({ reviews, fix}) {
         if (fix) {
             return(
                 <Row xs={1} sm={fix} className='my-2 pe-0'>
-                    {reviews.map((element, id) => {
+                    {reviews.map((element) => {
                         return(
-                            <Col key={id}>
+                            <Col key={element.id}>
                                 <ReviewCard review={element}/>
                             </Col>
                         )
@@ -21,9 +21,9 @@ export default function reviewFeed({ reviews, fix}) {
         }
         return(
             <Row xs={1} sm={2} md={2} lg={3} xl={4} className='my-2'>
-                {reviews.map((element, id) => {
+                {reviews.map((element) => {
                     return(
-                        <Col key={id}>
+                        <Col key={element.id}>
                             <ReviewCard review={element}/>
                         </Col>
                     )

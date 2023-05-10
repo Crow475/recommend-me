@@ -35,10 +35,13 @@ export default function ProfileCard({profile, published}) {
 
         try {
             const body = {profile: profile, 
-                          bio: bio.trim(),
+                          bio: bio,
                           shareLikes: shareLikes.current, 
                           shareDislikes: shareDislikes.current, 
                           shareStats: shareStats.current}
+            if (body.bio) {
+                body.bio = body.bio.trim()
+            }
             console.log(body)
             await fetch(BaseUrl + '/api/updateProfile', {
                 method: 'PUT',

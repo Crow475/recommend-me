@@ -19,7 +19,6 @@
     "bootstrap-icons": "^1.10.4",
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
-    "formidable": "^2.1.1",
     "markdown-to-jsx": "^7.2.0",
     "next": "13.2.4",
     "next-auth": "^4.22.0",
@@ -27,8 +26,7 @@
     "react-bootstrap": "^2.7.2",
     "react-bootstrap-icons": "^1.10.3",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.43.9",
-    "yup": "^1.1.1"
+    "react-hook-form": "^7.43.9"
   },
   "devDependencies": {
     "prisma": "^4.13.0"

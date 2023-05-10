@@ -93,7 +93,7 @@ export default function Editor({review}) {
                 <Row className='my-1 mx-1'>
                     <InputGroup className='px-0'>
                         <Form.Control type="file" onChange={onImageChange} accept={SupportedMIMETypes}/>
-                        <Button onClick={() => {setReviewImage(""); setImageLink(""); setImageOk(true)}}>Cancel</Button>
+                        <Button onClick={() => {setReviewImage(""); setImageLink(""); setImageOk(true)}}>Remove</Button>
                     </InputGroup>
                     <FileAlert/>
                 </Row>
