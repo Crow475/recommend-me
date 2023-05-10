@@ -15,6 +15,7 @@ const ReviewFeed = dynamic(() => import('../../components/review/reviewFeed'));
 const ScrollToTop = dynamic(() => import('../../components/scrollToTop'));
 const ProfileCard = dynamic(() => import('../../components/profile/profileCard'));
 const AccountSettings = dynamic(() => import('../../components/profile/accountSettings'))
+const SearchBar = dynamic(() => import('../../components/navbar/searchbar'))
 
 export async function getServerSideProps(context) {
     let session = await getServerSession(context.req, context.res, authOptions)
@@ -287,6 +288,7 @@ export default function ProfilePage(props) {
                                 <TopTabs />
                             </Row>
                             <Row>
+                                {currentTab === "published"?<SearchBar profile={props.profile}/>:null}
                                 {(currentTab != "settings")?<ProfileContent/>:<AccountSettings/>}
                             </Row>
                         </Col>

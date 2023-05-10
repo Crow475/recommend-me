@@ -1,36 +1,22 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 
-import { useRouter } from 'next/router';
 import { useSession, signIn, signOut } from "next-auth/react";
 
 const {Button, ButtonToolbar, ButtonGroup} = require('react-bootstrap');
-const { PencilSquare, BoxArrowRight } = require('react-bootstrap-icons');
+const { BoxArrowRight } = require('react-bootstrap-icons');
 
 const UsernameAndAvatar = dynamic(() => import ('../profile/usernameAndAvatar'));
+const CreateButton = dynamic(() => import('./createButton'))
 
 export default function Account() {
     const { data: session } = useSession();
-    const router = useRouter();
-
-    function CreateButton() {
-        if (router.asPath !== "/create") {
-            return(
-                <Link href='/create' passHref legacyBehavior>
-                    <Button className='mx-1'>
-                        <PencilSquare size={25}/>
-                        <span className='d-none d-xl-inline align-text-top'> Create</span>
-                    </Button>
-                </Link>
-            )
-        } 
-    }
 
     if (session) {
         return(
             <ButtonToolbar className='my-2 mx-1 px-0'>
                 <CreateButton />
-                <ButtonGroup>
+                <ButtonGroup className='ms-1'>
                     <Link href={`/profile/${session.user.profile.id}`} passHref legacyBehavior>
                         <Button>
                             <UsernameAndAvatar username={session.user.name} avatar={session.user.image}/>

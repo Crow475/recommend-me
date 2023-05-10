@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import { Inter } from 'next/font/google';
-import styles from '@/styles/Home.module.css';
 
 import prisma from '@/lib/prisma';
 import formatCreationDate from '@/lib/formatCreationDate';
@@ -14,7 +12,6 @@ const { Container, Row } = require('react-bootstrap');
 const Footer = dynamic(() => import('../components/footer'));
 const ReviewFeed = dynamic(() => import('../components/review/reviewFeed'))
 
-// const inter = Inter({ subsets: ['latin'] });
 
 export default function Home(props) {
   return (

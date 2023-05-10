@@ -3,9 +3,11 @@ import { useSession } from "next-auth/react";
 import { useState, useRef } from "react";
 import { useRouter } from 'next/router';
 
+import dynamic from 'next/dynamic';
 import styles from '@/styles/Account.module.css';
 
 const {Card, Badge, Row, Col, Image, Button, ButtonToolbar, Form } = require('react-bootstrap');
+const CreateButton = dynamic(() => import('../navbar/createButton'))
 
 const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
 
@@ -117,6 +119,21 @@ export default function ProfileCard({profile, published}) {
         }
     }
 
+    function Create() {
+        if (session && session.user.profile.id === profile.id) {
+            return(
+                <>
+                    <Row className='mx-2 mt-3'>
+                        <hr />
+                    </Row>
+                    <Row className='mx-1 my-1'>
+                        <CreateButton />
+                    </Row>
+                </>
+            )
+        }
+    }
+
     function SettingSwitch({setting, label, helpText}) {
         return(
             <Row className='mx-1 my-1'>
@@ -155,6 +172,7 @@ export default function ProfileCard({profile, published}) {
                     </Row>
                     <UserStats />
                     <EditButton />
+                    <Create />
                 </Card.Body>
             </Card>
         )

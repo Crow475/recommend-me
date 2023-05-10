@@ -1,13 +1,16 @@
+import ReadableCategory from '@/lib/readableCategory';
+
 import { Search, CaretDownFill, CaretUpFill, HandThumbsUpFill, HandThumbsDownFill, StarFill } from 'react-bootstrap-icons';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const { InputGroup, Button, ButtonToolbar, Form , Dropdown, Col} = require('react-bootstrap');
+const { InputGroup, Button, ButtonToolbar, Form , Dropdown, Col, Row} = require('react-bootstrap');
 
-export default function SearchBar({ full, defaultValue, defaultOrder }) {
+export default function SearchBar({ full, profile, defaultValue, defaultOrder, defaultCategory }) {
     const router =  useRouter()
     const [query, setQuery] = useState(defaultValue?defaultValue:"")
     const [order, setOrder] = useState(defaultOrder?defaultOrder:"relevant")
+    const [category, setCategory] = useState(defaultCategory?defaultCategory:"any")
 
     const orderButtons = [
         {value: "relevant", shortText: "Relevance", fullText: "Most relevant", logo: <StarFill size={20} className='mx-1'/>},
@@ -17,7 +20,7 @@ export default function SearchBar({ full, defaultValue, defaultOrder }) {
         {value: "disliked", shortText: "Disliked", fullText: "Most disliked first", logo: <HandThumbsDownFill size={20} className='mx-1'/>},
     ]
 
-    function find(newOrder) {
+    function find({ newOrder, newCategory }) {
         const quotedPattern = /"([a-z0-9 \-]+)"|'([a-z0-9 \-]+)'/gi
         const nonliteralPattern = /[^a-zA-z0-9 -]|(-\W)|\\/gi
         let formattedQuery = (query)?query.trim():""
@@ -38,13 +41,26 @@ export default function SearchBar({ full, defaultValue, defaultOrder }) {
         formattedQuery = q.join(' & ')
     
         if (query.trim()) {
-            router.push({
-                pathname: `/search/${query.trim()}`,
-                query: { 
-                    Search: formattedQuery,
-                    Order: newOrder?newOrder:order
-                }
-            })
+            if (profile) {
+                router.push({
+                    pathname: `/profile/search/${query.trim()}`,
+                    query: {
+                        Profile: profile.id, 
+                        Search: formattedQuery,
+                        Order: newOrder?newOrder:order,
+                        Category: newCategory?newCategory:category
+                    }
+                })
+            } else {
+                router.push({
+                    pathname: `/search/${query.trim()}`,
+                    query: { 
+                        Search: formattedQuery,
+                        Order: newOrder?newOrder:order,
+                        Category: newCategory?newCategory:category
+                    }
+                })
+            }
             if (!full) {
                 setQuery("")
             }
@@ -53,32 +69,51 @@ export default function SearchBar({ full, defaultValue, defaultOrder }) {
 
     const handleSubmit = async (event) => {
         event.preventDefault()
-        find()
+        find({})
+    }
+
+    function CategoryControl() {
+        if (full) {
+            return(
+                <Dropdown className='me-2'>
+                    <Dropdown.Toggle>
+                        <span className='align-text-top d-none d-lg-inline'>Category: </span>
+                        <span className='align-text-top'>{(category === "any")?"Any":ReadableCategory(category)}</span>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => {setCategory("any"); find({newCategory: "any"})}}>Any</Dropdown.Item>
+                        <Dropdown.Item onClick={() => {setCategory("Movie"); find({newCategory: "Movie"})}}>Movie</Dropdown.Item>
+                        <Dropdown.Item onClick={() => {setCategory("Book"); find({newCategory: "Book"})}}>Book</Dropdown.Item>
+                        <Dropdown.Item onClick={() => {setCategory("VideoGame"); find({newCategory: "VideoGame"})}}>Video game</Dropdown.Item>
+                        <Dropdown.Item onClick={() => {setCategory("TVSeries"); find({newCategory: "TVSeries"})}}>TV series</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            )
+        }
     }
 
     function OrderControl() {
         if (full) {
             return(
-                <>
-                    <Dropdown className='me-2'>
-                        <Dropdown.Toggle>
-                            <span className='align-text-top d-none d-lg-inline'>Order by:</span>
-                            {orderButtons.find(element => element.value === order).logo}
-                            <span className='align-text-top'>{orderButtons.find(element => element.value === order).shortText}</span>
-                        </Dropdown.Toggle>
+                <Dropdown className='me-2'>
+                    <Dropdown.Toggle>
+                        <span className='align-text-top d-none d-lg-inline'>Order by:</span>
+                        {orderButtons.find(element => element.value === order).logo}
+                        <span className='align-text-top'>{orderButtons.find(element => element.value === order).shortText}</span>
+                    </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
-                            {orderButtons.map((element, id) => {
-                                return(
-                                    <Dropdown.Item onClick={() => {setOrder(element.value); find(element.value)}} key={id}>
-                                        {element.logo}
-                                        <span className='align-text-top'>{element.fullText}</span>
-                                    </Dropdown.Item>
-                                )
-                            })}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </>
+                    <Dropdown.Menu>
+                        {orderButtons.map((element, id) => {
+                            return(
+                                <Dropdown.Item onClick={() => {setOrder(element.value); find({newOrder: element.value})}} key={id}>
+                                    {element.logo}
+                                    <span className='align-text-top'>{element.fullText}</span>
+                                </Dropdown.Item>
+                            )
+                        })}
+                    </Dropdown.Menu>
+                </Dropdown>
             )
         }
     }
@@ -86,24 +121,25 @@ export default function SearchBar({ full, defaultValue, defaultOrder }) {
     if (full) {
         return(
             <Form className='my-1' onSubmit={handleSubmit}>
-                <ButtonToolbar className='justify-content-start'>
-                    <Col xs={8} lg={9} xl={10}>
-                        <InputGroup>
-                            <Form.Control 
-                                placeholder='Search for reviews' 
-                                value={query} 
-                                onChange={(e) => setQuery(e.target.value)}
-                            />
-                            <Button variant='secondary' type='submit'>
-                                <Search className='align-middle' />
-                                <span className='align-text-top d-none d-lg-inline'> Search</span>
-                            </Button>
-                        </InputGroup>
-                    </Col>
-                    <Col xs={4} lg={3} xl={2}>
+                <Row>
+                    <InputGroup>
+                        <Form.Control 
+                            placeholder='Search for reviews' 
+                            value={query} 
+                            onChange={(e) => setQuery(e.target.value)}
+                        />
+                        <Button variant='secondary' type='submit'>
+                            <Search className='align-middle' />
+                            <span className='align-text-top d-none d-lg-inline'> Search</span>
+                        </Button>
+                    </InputGroup>
+                </Row>
+                <Row className='mt-2'>
+                    <ButtonToolbar>
                         <OrderControl />
-                    </Col>
-                </ButtonToolbar>
+                        <CategoryControl />
+                    </ButtonToolbar>
+                </Row>
             </Form>
         )
     }
