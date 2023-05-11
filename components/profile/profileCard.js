@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 
 import dynamic from 'next/dynamic';
 import styles from '@/styles/Account.module.css';
+import CheckAccess from '@/lib/checkAccess';
 
 const {Card, Badge, Row, Col, Image, Button, ButtonToolbar, Form } = require('react-bootstrap');
 const CreateButton = dynamic(() => import('../navbar/createButton'))
@@ -110,7 +111,7 @@ export default function ProfileCard({profile, published}) {
     }
 
     function EditButton() {
-        if (session && session.user.profile.id === profile.id) {
+        if (CheckAccess(profile, session)) {
             return(
                 <Row className='mx-1 mt-3'>
                     <Button variant='secondary' onClick={() => setEditing(true)}><PencilFill/><span className='align-text-top'> Edit profile</span></Button>
@@ -120,14 +121,14 @@ export default function ProfileCard({profile, published}) {
     }
 
     function Create() {
-        if (session && session.user.profile.id === profile.id) {
+        if (CheckAccess(profile, session)) {
             return(
                 <>
                     <Row className='mx-2 mt-3'>
                         <hr />
                     </Row>
                     <Row className='mx-1 my-1'>
-                        <CreateButton />
+                        <CreateButton profile={profile}/>
                     </Row>
                 </>
             )

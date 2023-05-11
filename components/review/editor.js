@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import CheckAccess from '@/lib/checkAccess';
 import styles from '@/styles/Review.module.css'
 import ReadableCategory from '@/lib/readableCategory';
 import GetFileExtension from '@/lib/getFileExtension';
@@ -17,7 +18,7 @@ const ConfirmDelete = dynamic(() => import('../dialogs/confirmDelete'))
 const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
 
 
-export default function Editor({review}) {
+export default function Editor({review, profileId}) {
     const router = useRouter()
     const { data: session } = useSession();
     const [rating, setRating] = useState((review)?review.rating:-1)
@@ -108,7 +109,7 @@ export default function Editor({review}) {
     }
 
     function DeleteButton() {
-        if (review && session && review.author.id === session.user.profile.id) {
+        if (review && CheckAccess(review.author, session)) {
             return(
                 <>
                     <ConfirmDelete show={deleteDialog} 
@@ -180,7 +181,7 @@ export default function Editor({review}) {
     }
 
     const handleDelete = async (event) => {
-        if (review && session && review.author.id === session.user.profile.id) {
+        if (review && CheckAccess(review.author, session)) {
             try {
                 const body = {
                     id: review.id,
@@ -209,15 +210,19 @@ export default function Editor({review}) {
             header.length <= 100 &&
             header.length >= 3) {
             try {
-                var body = {header: header, 
-                            content: content, 
-                            category: category, 
-                            work: work, 
-                            rating: Number(rating), 
-                            tags: tags, 
-                            published: publish,
-                            image: null,
-                            id: null}
+                var body = {
+                    header: header, 
+                    content: content, 
+                    category: category, 
+                    work: work, 
+                    rating: Number(rating), 
+                    tags: tags, 
+                    published: publish,
+                    image: null,
+                    profileId: null,
+                    id: null
+                }
+                body.profileId = profileId?profileId:session.user.profile.id
                 if (review) {
                     body.image = (review.image === imageLink)?review.image:null
                     body.id = review.id

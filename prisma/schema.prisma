@@ -47,6 +47,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   profile       Profile?
+  role          Role @default(User)
 }
 
 model VerificationToken {
@@ -105,4 +106,9 @@ enum Category {
   Book
   Movie
   TVSeries
+}
+
+enum Role {
+  Admin
+  User
 }

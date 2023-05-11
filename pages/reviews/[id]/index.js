@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import prisma from '@/lib/prisma';
+import CheckAccess from '@/lib/checkAccess';
 import formatCreationDate from '@/lib/formatCreationDate';
 import styles from '@/styles/Review.module.css'
 
@@ -81,7 +82,7 @@ export async function getServerSideProps(context) {
             return {
                 props: error
             }
-        } else if (session.user.profile.id !== review.author.id) {
+        } else if (!CheckAccess(review.author, session)) {
             error.code = "notAuthor"
             return {
                 props: error

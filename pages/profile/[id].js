@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import prisma from '@/lib/prisma';
 import dynamic from 'next/dynamic';
+import CheckAccess from '@/lib/checkAccess';
 import formatCreationDate from '@/lib/formatCreationDate';
 
 import { Journals, CheckLg, HandThumbsUpFill, HandThumbsDownFill, GearFill } from 'react-bootstrap-icons';
@@ -23,17 +24,29 @@ export async function getServerSideProps(context) {
     let disliked = null
     let liked = null
     let drafts = null
+
+    function UserInfo() {
+        if (CheckAccess(context.params, session)) {
+            return (
+                {user: true,}
+            )
+        } else {
+            return (
+                {user: {
+                    select: {
+                        name: true
+                    }
+                },}
+            )
+        }
+    }
     
     let profile = await prisma.profile.findUnique({
         where: {
             id: context.params.id
         },
         include: {
-            user: {
-                select: {
-                    name: true
-                }
-            },
+            ...UserInfo(),
             _count: {
                 select: {
                     comments: true,
@@ -79,11 +92,11 @@ export async function getServerSideProps(context) {
     })
     published.map(review => {formatCreationDate(review)});
 
-    if (session && session.user.profile.id === context.params.id) {
+    if (CheckAccess(context.params, session)) {
         drafts = await prisma.review.findMany({
             where: {
                 author: {
-                    id: session.user.profile.id
+                    id: context.params.id
                 },
                 published: false
             },
@@ -106,7 +119,7 @@ export async function getServerSideProps(context) {
         drafts.map(review => {formatCreationDate(review)});
     }
 
-    if ((session && session.user.profile.id === context.params.id) || profile.shareLikes) {
+    if (CheckAccess(context.params, session) || profile.shareLikes) {
         liked = await prisma.review.findMany({
             where: {
                 likedBy: {
@@ -134,7 +147,7 @@ export async function getServerSideProps(context) {
         liked.map(review => {formatCreationDate(review)});
     }
 
-    if ((session && session.user.profile.id === context.params.id) || profile.shareDislikes) {
+    if (CheckAccess(context.params, session) || profile.shareDislikes) {
         disliked = await prisma.review.findMany({
             where: {
                 dislikedBy: {
@@ -204,7 +217,7 @@ export default function ProfilePage(props) {
     }
 
     function SettingsButton() {
-        if (session && session.user.profile.id === props.profile.id) {
+        if (CheckAccess(props.profile, session)) {
             return (
                 <Button size='lg'
                     variant={(currentTab === "settings")?"primary":"light"}
@@ -222,16 +235,18 @@ export default function ProfilePage(props) {
         if (props.drafts || props.liked || props.disliked) {
             return(
                 <Row className='my-2'>
-                    <ButtonGroup>
-                        {tabs.map((element, id) => {
-                            if (element) {
-                                return(
-                                    <TabButton label={element.label} value={element.value} logo={element.logo} key={id}/>
-                                )
-                            }
-                        })}
-                        <SettingsButton />
-                    </ButtonGroup>
+                    <Col>
+                        <ButtonGroup>
+                            {tabs.map((element, id) => {
+                                if (element) {
+                                    return(
+                                        <TabButton label={element.label} value={element.value} logo={element.logo} key={id}/>
+                                    )
+                                }
+                            })}
+                            <SettingsButton />
+                        </ButtonGroup>
+                    </Col>
                 </Row>
             )
         }
@@ -250,7 +265,7 @@ export default function ProfilePage(props) {
                             )
                         }
                     })}
-                    {(session && session.user.profile.id === props.profile.id)?<hr/>:null}
+                    {CheckAccess(props.profile, session)?<hr/>:null}
                     <Row className='my-1 mx-1'>
                         <SettingsButton />
                     </Row>
@@ -263,6 +278,9 @@ export default function ProfilePage(props) {
         return(
             <>
                 <h2>{tabs.find(element => {if (element) {return (element.value === currentTab)}}).label}</h2>
+                <Row className={(currentTab === "published")?"mb-1 pe-0 ":"d-none"}>
+                    <SearchBar profile={props.profile} label={`Search ${props.profile.user.name}'s reviews`}/>
+                </Row>
                 <ReviewFeed reviews={props[currentTab]} fix={2}/>
             </>
         )
@@ -277,7 +295,7 @@ export default function ProfilePage(props) {
             <main>
                 <Container fluid>
                     <Row className='my-2'>
-                        <h1>{props.profile.user.name}`s profile</h1>
+                        <h1>{`${props.profile.user.name}'s profile`}</h1>
                     </Row>
                     <Row className='my-2'>
                         <Col xs={12} lg={3}>
@@ -288,8 +306,7 @@ export default function ProfilePage(props) {
                                 <TopTabs />
                             </Row>
                             <Row>
-                                {currentTab === "published"?<SearchBar profile={props.profile}/>:null}
-                                {(currentTab != "settings")?<ProfileContent/>:<AccountSettings/>}
+                                {(currentTab != "settings")?<ProfileContent/>:<AccountSettings profile={props.profile}/>}
                             </Row>
                         </Col>
                         <Col lg={2} className='d-none d-lg-block'>

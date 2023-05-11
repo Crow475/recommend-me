@@ -1,11 +1,19 @@
+import prisma from "@/lib/prisma"
+
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { getServerSession } from "next-auth/next"
-import prisma from "@/lib/prisma"
 
 export default async function handle(req, res) {
     const session = await getServerSession(req, res, authOptions)
 
     if (session) {
+        let authorId = session.user.profile.id
+        
+        if (req.body.profileId) {
+            if (req.body.profileId === authorId || session.user.role === "Admin") {
+                authorId = req.body.profileId
+            }
+        }
         try {
             let result
             if (req.method === 'PUT' && req.body.id) {
@@ -27,7 +35,7 @@ export default async function handle(req, res) {
             } else {
                 result = await prisma.review.create({
                     data: {
-                        author: { connect: { id: session.user.profile.id } },
+                        author: { connect: { id: authorId } },
                         header: req.body.header,
                         image: req.body.image,
                         content: req.body.content,

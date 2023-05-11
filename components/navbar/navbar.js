@@ -2,22 +2,28 @@ import styles from '@/styles/Navbar.module.css'
 import Link from 'next/link'
 import dynamic from 'next/dynamic';
 
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
 const {Container, Nav, Navbar, NavbarBrand, Row, Col} = require('react-bootstrap');
-const { LightningChargeFill, HouseDoorFill, BarChartFill} = require('react-bootstrap-icons')
+const { LightningChargeFill, HouseDoorFill, BarChartFill, TerminalFill} = require('react-bootstrap-icons')
 
 const SessionControl = dynamic(() => import('./sessionControl'))
 const Search = dynamic(() => import('./searchbar'))
 
 export default function NavBar() {
     const router = useRouter();
+    const { data: session } = useSession();
 
     const links = [
         {name: 'Home', href: '/', logo: <HouseDoorFill/>},
         {name: 'Top', href: '/top', logo: <BarChartFill/>},
         {name: 'Latest', href: '/latest', logo: <LightningChargeFill/>},
     ]
+
+    if (session && session.user.role === "Admin") {
+        links.push({name: 'Admin', href: '/admin', logo: <TerminalFill/>})
+    }
 
     function Autonav() {
         return(

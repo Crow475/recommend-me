@@ -6,7 +6,6 @@ import { getProviders, signIn, getSession } from "next-auth/react"
 import { Reddit, Github, Google } from 'react-bootstrap-icons'
 
 const { Container, Row, Col, Card, Button } = require('react-bootstrap')
-const Footer = dynamic(() => import('../components/footer'))
 
 export default function SignIn({ providers }) {
     const router = useRouter()
@@ -48,6 +47,8 @@ export default function SignIn({ providers }) {
     );
 }
 export async function getServerSideProps(context) {
+    const { req, query } = context;
+    const { callbackUrl } = query;
     const session = await getSession(context)
 
     const createProfile = async (e) => {
@@ -69,7 +70,7 @@ export async function getServerSideProps(context) {
     
     if (session) {
         createProfile();
-        return { redirect: { destination: "/" } };
+        return { redirect: { destination: callbackUrl } };
     }
 
     return { props: { providers: await getProviders() } };

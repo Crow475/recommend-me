@@ -1,8 +1,10 @@
+import Link from 'next/link';
+import CheckAccess from '@/lib/checkAccess';
+
 import { HandThumbsUp, HandThumbsUpFill, HandThumbsDown, HandThumbsDownFill, ChatDots, Share, PencilFill} from 'react-bootstrap-icons';
 import { StandardTooltipProps } from '@/lib/tooltipProps';
 import { useSession, signIn} from "next-auth/react";
 import { useState, useEffect, forwardRef } from 'react';
-import Link from 'next/link';
 
 const { Button, ButtonGroup, ButtonToolbar, OverlayTrigger, Tooltip, Popover } = require('react-bootstrap');
 
@@ -94,7 +96,7 @@ export default function Reactions({review, vertical}) {
             )
         })
         
-        if (session && session.user.profile.id === review.author.id) {
+        if (CheckAccess(review.author, session)) {
             return(
                 <Link href={reviewLink + '/edit'} passHref legacyBehavior>
                     <EditReview />

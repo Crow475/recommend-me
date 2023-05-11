@@ -192,7 +192,7 @@ export default function Search(props) {
                             <BackToProfile />
                         </Row>
                         <Row className='my-2 mx-2'>
-                            <SearchBar profile={props.profile} full={true} defaultValue={props.query} defaultOrder={props.order} defaultCategory={props.category}/>
+                            <SearchBar profile={props.profile} label={`Search ${props.profile.user.name}'s reviews`} full={true} defaultValue={props.query} defaultOrder={props.order} defaultCategory={props.category}/>
                         </Row>
                         <Row className='my-2'>
                             <h2>{`Results for "${props.query}" (${props.found.length})`}</h2>

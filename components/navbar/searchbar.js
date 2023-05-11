@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 const { InputGroup, Button, ButtonToolbar, Form , Dropdown, Col, Row} = require('react-bootstrap');
 
-export default function SearchBar({ full, profile, defaultValue, defaultOrder, defaultCategory }) {
+export default function SearchBar({ full, profile, defaultValue, defaultOrder, defaultCategory, label }) {
     const router =  useRouter()
     const [query, setQuery] = useState(defaultValue?defaultValue:"")
     const [order, setOrder] = useState(defaultOrder?defaultOrder:"relevant")
@@ -124,7 +124,7 @@ export default function SearchBar({ full, profile, defaultValue, defaultOrder, d
                 <Row>
                     <InputGroup>
                         <Form.Control 
-                            placeholder='Search for reviews' 
+                            placeholder={label?label:'Search reviews'} 
                             value={query} 
                             onChange={(e) => setQuery(e.target.value)}
                         />
@@ -147,7 +147,7 @@ export default function SearchBar({ full, profile, defaultValue, defaultOrder, d
         <Form className='my-1' onSubmit={handleSubmit}>
             <InputGroup>
                 <Form.Control 
-                    placeholder='Search for reviews' 
+                    placeholder={label?label:'Search reviews'} 
                     value={query} 
                     onChange={(e) => setQuery(e.target.value)}
                 />

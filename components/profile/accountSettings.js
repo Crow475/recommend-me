@@ -1,9 +1,56 @@
+import dynamic from "next/dynamic";
+import CheckAccess from "@/lib/checkAccess";
+
 import { useSession } from "next-auth/react";
-import { useState, useRef } from "react";
+import { signIn, signOut } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 const {Card, Badge, Row, Col, Image, Button, ButtonToolbar, Form } = require('react-bootstrap');
 
-export default function AccountSettings() {
+const ConfirmProfileDelete = dynamic(() => import('../../components/dialogs/confirmProfileDelete'))
+
+const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+
+export default function AccountSettings({ profile }) {
+    const { data: session } = useSession();
+    const router = useRouter()
+    const [showDelete, setShowDelete] = useState(false)
+    
+    function DeleteProfileButton() {
+        return(
+            <>
+                <ConfirmProfileDelete show={showDelete} onCancel={() => setShowDelete(false)} onConfirm={handleDelete}/>
+                <Button
+                    variant='danger'
+                    onClick={() => setShowDelete(true)}
+                >
+                    Clear profile data
+                </Button>
+            </>
+        )
+    }
+
+    const handleDelete = async (event) => {
+        if (CheckAccess(profile, session)) {
+            try {
+                const body = {
+                    profile: profile
+                }
+                const response = await fetch(BaseUrl + "/api/deleteProfile", {
+                    method: 'DELETE',
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(body),
+                })
+                const data = await response.json()
+                router.push("/")
+                router.reload()
+            } catch(err) {
+                console.error(err)
+            }
+        }
+    }
+    
     return (
         <>
             <h2>Account settings</h2>
@@ -34,6 +81,14 @@ export default function AccountSettings() {
                 <Row className="my-2 justify-content-center">
                     <Col xs={1}>
                         <Button variant="success">Apply</Button>
+                    </Col>
+                </Row>
+                <Row className="my-2">
+                    <h4 className="text-danger">Dangerous</h4>
+                </Row>
+                <Row className="my-2 ms-2">
+                    <Col xs={3}>
+                        <DeleteProfileButton />
                     </Col>
                 </Row>
             </Form>
