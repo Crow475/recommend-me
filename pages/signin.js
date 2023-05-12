@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic';
 import prisma from "@/lib/prisma"
 
 import { useRouter } from 'next/router' 

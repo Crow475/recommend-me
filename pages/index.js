@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import Head from 'next/head';
-import dynamic from 'next/dynamic';
-
 import prisma from '@/lib/prisma';
+import dynamic from 'next/dynamic';
+import styles from '@/styles/Home.module.css';
 import formatCreationDate from '@/lib/formatCreationDate';
 
 import { ArrowRight } from 'react-bootstrap-icons';
@@ -10,41 +10,8 @@ import { ArrowRight } from 'react-bootstrap-icons';
 const { Container, Row } = require('react-bootstrap');
 
 const Footer = dynamic(() => import('../components/footer'));
-const ReviewFeed = dynamic(() => import('../components/review/reviewFeed'))
+const ReviewFeed = dynamic(() => import('../components/review/reviewFeed'));
 
-
-export default function Home(props) {
-  return (
-    <>
-      <Head>
-        <title>RecommendMe - Home</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-      <main>
-        <Container fluid>
-          {/* <Row className='my-2'>
-            <h1 className='text-center'>Explore</h1>
-          </Row> */}
-          <h1 className='my-2'>Home</h1>
-          <Row className='my-2'>
-            <Link href='/top'>
-              <h2>Top reviews <ArrowRight size={30} className='align-middle'/></h2>
-            </Link>
-          </Row>
-          <ReviewFeed reviews={props.top} />
-          <hr />
-          <Row className='my-2'>
-            <Link href='/latest'>
-              <h2> Latest reviews <ArrowRight size={30} className='align-middle'/></h2>
-            </Link>
-          </Row>
-          <ReviewFeed reviews={props.latest}/>
-        </Container>
-        <Footer/>
-      </main>
-    </>
-  )
-}
 
 export const getServerSideProps = async () => {
   let latest = await prisma.review.findMany({
@@ -107,5 +74,41 @@ export const getServerSideProps = async () => {
   return {
     props: { latest, top }
   }
+};
 
+export default function Home(props) {
+  return (
+    <>
+      <Head>
+        <title>RecommendMe - Home</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <main>
+        <Container fluid>
+          <h1 className='my-2'>Home</h1>
+          <Row className='my-2'>
+            <Link href='/top'>
+              <h2 className={styles.link}>
+                <span>Top reviews</span> 
+                <ArrowRight size={30} className='align-middle'/>
+              </h2>
+            </Link>
+          </Row>
+          <ReviewFeed reviews={props.top} />
+          <hr />
+          <Row className='my-2'>
+            <Link href='/latest'>
+              <h2 className={styles.link}>
+                <span>Latest reviews</span>
+                <ArrowRight size={30} className='align-middle'/>
+              </h2>
+            </Link>
+          </Row>
+          <ReviewFeed reviews={props.latest}/>
+        </Container>
+        <Footer/>
+      </main>
+    </>
+  )
 }
+

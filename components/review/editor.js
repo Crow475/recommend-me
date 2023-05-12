@@ -4,36 +4,46 @@ import styles from '@/styles/Review.module.css'
 import ReadableCategory from '@/lib/readableCategory';
 import GetFileExtension from '@/lib/getFileExtension';
 
-import { InfoCircleFill, XCircle, TrashFill, CheckLg, JournalPlus, XLg, MarkdownFill } from 'react-bootstrap-icons';
-import { SupportedFileExtensions, SupportedMIMETypes } from '@/lib/supportedImages';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
+import { SupportedFileExtensions, SupportedMIMETypes } from '@/lib/supportedImages';
+import { InfoCircleFill, XCircle, TrashFill, CheckLg, JournalPlus, XLg, MarkdownFill } from 'react-bootstrap-icons';
 
-const {Card, Row, Col, Container, Image, Button, Form, ButtonToolbar, InputGroup, DropdownButton, Dropdown, ButtonGroup, Alert, Badge} = require('react-bootstrap');
+const {
+    Card, Row, 
+    Col, Container, 
+    Image, Button, 
+    Form, ButtonToolbar, 
+    InputGroup, DropdownButton, 
+    Dropdown, ButtonGroup, 
+    Alert, Badge
+} = require('react-bootstrap');
 
-const RatingBadge = dynamic(() => import('./ratingBadge'))
-const ConfirmDelete = dynamic(() => import('../dialogs/confirmDelete'))
+const RatingBadge = dynamic(() => import('./ratingBadge'));
+const ConfirmDelete = dynamic(() => import('../dialogs/confirmDelete'));
 
-const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+const BaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 
 export default function Editor({review, profileId}) {
     const router = useRouter()
+
     const { data: session } = useSession();
-    const [rating, setRating] = useState((review)?review.rating:-1)
-    const [header, setHeader] = useState((review)?review.header:"")
-    const [category, setCategory] = useState((review)?review.category:"")
-    const [work, setWork] = useState((review)?review.work:"")
-    const [reviewImage, setReviewImage] = useState("")
-    const [imageLink, setImageLink] =useState((review)?review.image:null)
-    const [imageOk, setImageOk] = useState(true)
-    const [content, setContent] = useState((review)?review.content:"")
-    const [publish, setPublish] = useState((review)?review.published:false)
-    const [tags, setTags] = useState((review)?review.tags:[])
-    const [tagInput, setTagInput] = useState("")
-    const [showErrors, setShowErrors] = useState(false)
-    const [deleteDialog, setDeleteDialog] = useState(false)
+
+    const [tagInput, setTagInput] = useState("");
+    const [imageOk, setImageOk] = useState(true);
+    const [reviewImage, setReviewImage] = useState("");
+    const [showErrors, setShowErrors] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [work, setWork] = useState(review? review.work : "");
+    const [tags, setTags] = useState(review? review.tags : []);
+    const [rating, setRating] = useState(review? review.rating : -1);
+    const [header, setHeader] = useState(review? review.header : "");
+    const [content, setContent] = useState(review? review.content : "");
+    const [category, setCategory] = useState(review? review.category : "");
+    const [imageLink, setImageLink] =useState(review? review.image : null);
+    const [publish, setPublish] = useState(review? review.published : false);
     
     const onImageChange = (e) => {
         setReviewImage(e.target.files[0])
@@ -94,7 +104,15 @@ export default function Editor({review, profileId}) {
                 <Row className='my-1 mx-1'>
                     <InputGroup className='px-0'>
                         <Form.Control type="file" onChange={onImageChange} accept={SupportedMIMETypes}/>
-                        <Button onClick={() => {setReviewImage(""); setImageLink(""); setImageOk(true)}}>Remove</Button>
+                        <Button 
+                            onClick={() => {
+                                setReviewImage(""); 
+                                setImageLink(""); 
+                                setImageOk(true)
+                            }}
+                        >
+                            Remove
+                        </Button>
                     </InputGroup>
                     <FileAlert/>
                 </Row>
@@ -115,8 +133,8 @@ export default function Editor({review, profileId}) {
                     <ConfirmDelete show={deleteDialog} 
                         onCancel={() => setDeleteDialog(false)} 
                         onConfirm={handleDelete}
-                        header={review.published?"Confirm review deletion":"Confirm draft deletion"}
-                        text={review.published?"Are you sure you want to delete this review? All comments and likes will be lost.":"Are you sure you want to delete this draft?"}
+                        header={review.published? "Confirm review deletion" : "Confirm draft deletion"}
+                        text={review.published? "Are you sure you want to delete this review? All comments and likes will be lost." : "Are you sure you want to delete this draft?"}
                     />
                     <Button variant='danger' onClick={() => setDeleteDialog(true)}>
                         <TrashFill size={20}/>
@@ -144,14 +162,23 @@ export default function Editor({review, profileId}) {
                 <ButtonToolbar className='justify-content-end'>
                     <ButtonGroup className='mx-1'>
                         <DeleteButton />
-                        <Button variant={review?'secondary':'danger'} onClick={() => router.back()}>
-                            {review?<XLg size={20}/>:<TrashFill size={20}/>}
-                            <span className='d-none d-xl-inline align-text-top'> {review?"Cancel":"Discard"}</span>
+                        <Button 
+                            variant={review? 'secondary' : 'danger'} 
+                            onClick={() => router.back()}
+                        >
+                            {review? <XLg size={20} className='mx-1'/> : <TrashFill size={20} className='mx-1'/>}
+                            <span className='d-none d-xl-inline align-text-top'> 
+                                {review? "Cancel" : "Discard"}
+                            </span>
                         </Button>
                     </ButtonGroup>
                     <ButtonGroup>
                         <DraftButton />
-                        <Button variant='success' type='submit' onClick={() => setPublish(true)}>
+                        <Button 
+                            variant='success' 
+                            type='submit' 
+                            onClick={() => setPublish(true)}
+                        >
                             <CheckLg size={20}/>
                             <span className='align-text-top'> Publish</span>
                         </Button>
@@ -180,7 +207,7 @@ export default function Editor({review, profileId}) {
         fileReader.readAsArrayBuffer(file)
     }
 
-    const handleDelete = async (event) => {
+    const handleDelete = async () => {
         if (review && CheckAccess(review.author, session)) {
             try {
                 const body = {
@@ -258,9 +285,6 @@ export default function Editor({review, profileId}) {
                             <span> {(header === "")?"Review header":header}</span>
                         </h1>
                     </Col>
-                    <Col  xs={12} md={5} lg={4} xl={3}>
-                        
-                    </Col>
                 </Row>
                 <PublishToolbar />
                 <Row>
@@ -284,8 +308,12 @@ export default function Editor({review, profileId}) {
                                             value={header} 
                                             onChange={(e) => setHeader(e.target.value)}
                                         />
-                                        <span className='text-danger'>{(showErrors && !header)?" Your review needs a header!":""} </span>
-                                        <span className='text-danger'>{(showErrors && header && (header.length > 100 || header.length < 3))?"Header must be 3-100 characters long!":""}</span>
+                                        <span className='text-danger'>
+                                            {(showErrors && !header)? " Your review needs a header!" : ""}
+                                        </span>
+                                        <span className='text-danger'>
+                                            {(showErrors && header && (header.length > 100 || header.length < 3))? "Header must be 3-100 characters long!" : ""}
+                                        </span>
                                     </Col>
                                 </Row>
                                 <Row className='my-1 py-2'>
@@ -349,7 +377,9 @@ export default function Editor({review, profileId}) {
                                     <span className='text-danger'>{tags.includes(tagInput)?"Tags have to be unique!":""}</span>
                                     <span className='text-warning'>{(tags.length >= 20)?"Cannot add more tags!":""}</span>
                                 </Row>
-                                <span className={(!header || !work || !category || rating === -1) && showErrors?"text-danger":'text-muted'}> * - required fields</span>
+                                <span className={(!header || !work || !category || rating === -1) && showErrors?"text-danger":'text-muted'}>
+                                    * - required fields
+                                </span>
                             </Card.Body>
                         </Card>
                     </Col>

@@ -1,0 +1,12 @@
+.link {
+    margin-left: 10px;
+}
+
+.link > * {
+    margin-right: 2px;
+    transition: margin-right 0.2s;
+}
+
+.link:hover > * {
+    margin-right: 6px;
+}

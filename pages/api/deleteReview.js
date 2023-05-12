@@ -1,6 +1,6 @@
-import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { getServerSession } from "next-auth/next"
-import prisma from "@/lib/prisma"
+import prisma from '@/lib/prisma';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 export default async function handle(req, res) {
     const session = await getServerSession(req, res, authOptions)

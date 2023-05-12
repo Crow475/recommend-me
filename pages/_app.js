@@ -11,10 +11,6 @@ import '@/styles/globals.css'
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter()
   
-  // useEffect(() => {
-  //   import("bootstrap/dist/js/bootstrap");
-  // }, []);
-
   const layoutDisable = router.pathname.startsWith('/signin')
   const LayoutComponent = layoutDisable?React.Fragment:Layout
   

@@ -1,9 +1,9 @@
-import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import prisma from '@/lib/prisma';
+import dynamic from 'next/dynamic';
 import CheckAccess from '@/lib/checkAccess';
+import styles from '@/styles/Review.module.css';
 import formatCreationDate from '@/lib/formatCreationDate';
-import styles from '@/styles/Review.module.css'
 
 import { useRouter } from 'next/router';
 import { getServerSession } from "next-auth/next";
@@ -13,14 +13,14 @@ import { InfoCircleFill, XLg } from 'react-bootstrap-icons';
 
 const {Card, Badge, Row, Col, Container, Accordion, Image, Button} = require('react-bootstrap');
 
+const Comment = dynamic(() => import('../../../components/review/comment'));
+const Reactions = dynamic(() => import('../../../components/review/reactions'));
+const ReviewText = dynamic(() => import('../../../components/review/reviewText'));
 const CommentForm = dynamic(() => import('../../../components/review/commentForm'));
 const RatingBadge = dynamic(() => import('../../../components/review/ratingBadge'));
-const Reactions = dynamic(() => import('../../../components/review/reactions'));
 const ProfileLink = dynamic(() => import('../../../components/profile/profileLink'));
-const Comment = dynamic(() => import('../../../components/review/comment'));
-const NotSignedIn = dynamic(() => import('../../../components/banners/notSignedIn'))
-const WrongAccount = dynamic(() => import('../../../components/banners/wrongAccount'))
-const ReviewText = dynamic(() => import('../../../components/review/reviewText'))
+const NotSignedIn = dynamic(() => import('../../../components/banners/notSignedIn'));
+const WrongAccount = dynamic(() => import('../../../components/banners/wrongAccount'));
 
 export async function getServerSideProps(context) {
     let session = await getServerSession(context.req, context.res, authOptions)
@@ -74,7 +74,7 @@ export async function getServerSideProps(context) {
         }
     }
 
-    const error = {code: null}
+    const error = {code: null};
 
     if (!review.published) {
         if (!session) {
@@ -88,15 +88,15 @@ export async function getServerSideProps(context) {
                 props: error
             }
         }
-    }
+    };
 
-    review = formatCreationDate(review)
-    review.comments.map( comment => {formatCreationDate(comment)})
-    review.comments.map( comment => {formatCreationDate(comment.review)})
+    review = formatCreationDate(review);
+    review.comments.map( comment => {formatCreationDate(comment)});
+    review.comments.map( comment => {formatCreationDate(comment.review)});
 
     return {
         props: review
-    }
+    };
 }
 
 const ReviewPage = (props) => {
@@ -219,7 +219,7 @@ const ReviewPage = (props) => {
                 </Container>
             </main>
         </>
-    )
-}
+    );
+};
 
-export default ReviewPage
+export default ReviewPage;

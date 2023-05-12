@@ -4,8 +4,8 @@ import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
-const Editor = dynamic(() => import('../../components/review/editor'))
-const NotSignedIn = dynamic(() => import('../../components/banners/notSignedIn'))
+const Editor = dynamic(() => import('../../components/review/editor'));
+const NotSignedIn = dynamic(() => import('../../components/banners/notSignedIn'));
 
 export default function Create() {
     const { data: session } = useSession();
@@ -16,7 +16,7 @@ export default function Create() {
             <>
                 <Head>
                     <title>RecommendMe - Create</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <meta name='viewport' content='width=device-width, initial-scale=1' />
                 </Head>
                 <main>
                     <Editor profileId={router.query.profileId}/>
@@ -25,7 +25,7 @@ export default function Create() {
         )
     } else {
         return(
-            <NotSignedIn text="You need to be signed in to write reviews!" />
+            <NotSignedIn text='You need to be signed in to write reviews!' />
         )
     }
 }

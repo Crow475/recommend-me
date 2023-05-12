@@ -2,15 +2,15 @@ import Head from 'next/head';
 import prisma from '@/lib/prisma';
 import dynamic from 'next/dynamic';
 
-import { authOptions } from "./api/auth/[...nextauth]";
-import { getServerSession } from "next-auth/next";
 import { useSession } from 'next-auth/react';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./api/auth/[...nextauth]";
 
-const {Row, Col, Container, Button, ButtonGroup, Table, Badge } = require('react-bootstrap');
+const {Row, Container, Table, Badge } = require('react-bootstrap');
 
-const NotSignedIn = dynamic(() => import('../components/banners/notSignedIn'))
-const WrongAccount = dynamic(() => import('../components/banners/wrongAccount'))
-const ProfileLink = dynamic(() => import('../components/profile/profileLink'))
+const NotSignedIn = dynamic(() => import('../components/banners/notSignedIn'));
+const ProfileLink = dynamic(() => import('../components/profile/profileLink'));
+const WrongAccount = dynamic(() => import('../components/banners/wrongAccount'));
 
 export async function getServerSideProps(context) {
     let session = await getServerSession(context.req, context.res, authOptions)
@@ -80,7 +80,7 @@ export default function AdminPanel(props) {
                                 <h1>Users</h1>
                             </Row>
                             <Row className='mx-1'>
-                                <Table striped borderless hover>
+                                <Table striped borderless hover responsive>
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -105,15 +105,15 @@ export default function AdminPanel(props) {
                         </Container>
                     </main>
                 </>
-            )
+            );
         } else {
             return(
                 <WrongAccount text="Sign in using admin account to use admin tools!"/>
-            )
-        }
+            );
+        };
     } else {
         return(
             <NotSignedIn text="Sign in using admin account to use admin tools!" />
-        )
-    }
-}
+        );
+    };
+};

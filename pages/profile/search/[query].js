@@ -9,10 +9,10 @@ import { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { ChevronLeft } from 'react-bootstrap-icons';
 
-const ReviewFeed = dynamic(() => import('../../../components/review/reviewFeed'));
 const ScrollToTop = dynamic(() => import('../../../components/scrollToTop'));
-const SearchBar = dynamic(() => import('../../../components/navbar/searchbar'))
-const ProfileCard = dynamic(() => import('../../../components/profile/profileCard'))
+const SearchBar = dynamic(() => import('../../../components/navbar/searchbar'));
+const ReviewFeed = dynamic(() => import('../../../components/review/reviewFeed'));
+const ProfileCard = dynamic(() => import('../../../components/profile/profileCard'));
 
 export async function getServerSideProps(context) {
     const query = context.query.query
@@ -29,7 +29,7 @@ export async function getServerSideProps(context) {
     }
 
     function CategoryFilter(category) {
-        if (category === "any") {
+        if (category === 'any') {
             return null
         }
         return(
@@ -177,7 +177,7 @@ export default function Search(props) {
         <>
             <Head>
                 <title>{title}</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <meta name='viewport' content='width=device-width, initial-scale=1' />
             </Head>
             <Container fluid>
                 <Row className='my-2'>
@@ -192,7 +192,14 @@ export default function Search(props) {
                             <BackToProfile />
                         </Row>
                         <Row className='my-2 mx-2'>
-                            <SearchBar profile={props.profile} label={`Search ${props.profile.user.name}'s reviews`} full={true} defaultValue={props.query} defaultOrder={props.order} defaultCategory={props.category}/>
+                            <SearchBar 
+                                profile={props.profile} 
+                                label={`Search ${props.profile.user.name}'s reviews`} 
+                                full={true} 
+                                defaultValue={props.query} 
+                                defaultOrder={props.order} 
+                                defaultCategory={props.category}
+                            />
                         </Row>
                         <Row className='my-2'>
                             <h2>{`Results for "${props.query}" (${props.found.length})`}</h2>
@@ -207,7 +214,7 @@ export default function Search(props) {
                         </Row>
                     </Col>
                 </Row>
-                {showBackButton?<ScrollToTop />:null}
+                {showBackButton? <ScrollToTop /> : null}
             </Container>
         </>
     )

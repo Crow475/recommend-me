@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from 'next/link';
 const {Row, Col, Container, Button } = require('react-bootstrap');
 
 export default function PageNotFound() {
@@ -31,4 +31,4 @@ export default function PageNotFound() {
             </Row>
         </Container>
     )
-}
+};

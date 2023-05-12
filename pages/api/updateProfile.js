@@ -1,8 +1,8 @@
-import prisma from "@/lib/prisma"
-import CheckAccess from '@/lib/checkAccess'
+import prisma from '@/lib/prisma';
+import CheckAccess from '@/lib/checkAccess';
 
-import { authOptions } from 'pages/api/auth/[...nextauth]'
-import { getServerSession } from "next-auth/next"
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 
 export default async function handle(req, res) {
