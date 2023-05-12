@@ -25,7 +25,7 @@ export async function getServerSideProps(context) {
     }
 
     function CategoryFilter(category) {
-        if (category === "any") {
+        if (category === 'any') {
             return null
         }
         return(
@@ -110,7 +110,7 @@ export default function Search(props) {
         <>
             <Head>
                 <title>{title}</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <meta name='viewport' content='width=device-width, initial-scale=1' />
             </Head>
             <Container fluid>
                 <Row className='my-2'>
