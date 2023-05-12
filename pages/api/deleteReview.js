@@ -4,10 +4,8 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 export default async function handle(req, res) {
     const session = await getServerSession(req, res, authOptions)
-    console.log(req.body)
 
     if (session && req.body.authorId === session.user.profile.id) {
-        console.log("Pew")
         try {
             const result = await prisma.review.delete({
                 where: {
