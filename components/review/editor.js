@@ -265,7 +265,6 @@ export default function Editor({review, profileId}) {
                     body: JSON.stringify(body)
                 })
                 const data = await response.json()
-                console.log(data.result.id)
                 router.push(`${BaseUrl}/reviews/${data.result.id}`)
             } catch(err) {
                 console.error(err)
